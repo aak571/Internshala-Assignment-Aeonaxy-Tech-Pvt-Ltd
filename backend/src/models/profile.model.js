@@ -1,21 +1,21 @@
 import mongoose from "mongoose"
 
 const profile_schema = new mongoose.Schema({
-    aws_s3_photo_url: {
+    profile_photo_name: {
         type: String,
-        default: 'aws s3 presigned url goes here'
+        default: 'No profile photo yet'
     },
     location: {
         type: String,
         lowercase: true,
         trim: true,
-        default: "user location goes here"
+        default: "No location yet"
     },
     what_brought_you_here: {
         type: String,
         lowercase: true,
         trim: true,
-        default: 'The reason why user chose our website goes here'
+        default: 'No reason yet'
     }
 })
 

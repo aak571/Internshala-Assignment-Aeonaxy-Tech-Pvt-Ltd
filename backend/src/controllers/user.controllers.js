@@ -45,27 +45,49 @@ const authenticate_user = async (req, res, next) => {
 }
 
 const profile_build = async (req, res, next) => {
-    cl(req.body)
     await user_model.findOne({ username: req.body.username }).populate('profile')
         .then(async resp => {
-            // res.status(200).json(new server_response(200, resp, 'Profile built successfully'))
+            let image_name
             const profile_id = resp.profile._id
+            cl(profile_id)
+            // const user_name = resp.name
+            req.body.name = req.body.name + '-' + resp.username
+            let s3_presigned_url = '/'
 
             await get_s3_signed_url_for_image_upload(req.body.name, req.body.type)
                 .then(resp => {
-                    if (resp === '') res.status(500).json(new server_response(500, err, 'S3 ERROR', 'Unsuccessful'))
-                    else res.status(201).json(new server_response(201, resp, 'S3 upload URL generated successfully'))
+                    if (resp === '') return res.status(500).json(new server_response(500, err, 'Could not create profile, please try again', 'Unsuccessful'))
+                    else {
+                        s3_presigned_url = resp
+                        image_name = req.body.name
+                    }
                 })
-                .catch(err => {
-                    res.status(500).json(new server_response(500, err, 'Faced problem while generating upload URL',
-                        'Unsuccessful'))
+                .catch(() => {
+                    image_name = '/'
                 })
 
+            if (image_name === '/') {
+                res.status(500).json(new server_response(500, err, 'Could not create profile, please try again',
+                    'Unsuccessful'))
+            }
+            else {
+                await profile_model.findOneAndUpdate({ _id: profile_id }, { profile_photo_name: image_name, location: req.body.location, what_brought_you_here: req.body.what_brought_you_here })
+                    .then(resp => {
+                        cl(resp)
+                        if (resp) res.status(201).json(new server_response(201, s3_presigned_url, 'Profile created'))
+                        else res.status(500).json(new server_response(500, err, 'Could not create profile, please try again',
+                            'Unsuccessful'))
+                    })
+                    .catch(err => {
+                        res.status(500).json(new server_response(500, err, 'Could not create profile, please try again',
+                            'Unsuccessful'))
+                    })
+            }
 
         })
         .catch(err => {
             cl(err.message)
-            res.status(400).json(new server_response(400, err, 'Looks like you do not have an account with us. Please go ahead and create one',
+            res.status(400).json(new server_response(400, err, 'Could not create profile, please try again',
                 'Unsuccessful'))
         })
 }
