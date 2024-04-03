@@ -1,9 +1,11 @@
 import express from 'express'
 import cors from 'cors'
+import bodyParser from 'body-parser'
 import { user_routes } from './routes/user.routes.js'
 
 const serve = express()
 
+serve.use(bodyParser.json())
 serve.use(cors({
     origin: process.env.ORIGIN,
     credentials: true

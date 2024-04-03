@@ -26,12 +26,12 @@ const create_account = async (req, res, next) => {
 }
 
 const authenticate_user = async (req, res, next) => {
-    const { email } = req.params
-    await user_model.findOne({ $and: [{ email }] }).populate('profile')
+    await user_model.findOne({ email: req.params.username }).populate('profile')
         .then(resp => {
             cl(resp)
             if (resp) {
-                res.status(200).json(new server_response(200, resp, 'You are logged in successsfully'))
+                res.cookie('Warm Greetings', `${resp.name}`)
+                res.status(200).json(new server_response(200, resp, 'You are logged in successsfully, Welcome'))
             }
             else {
                 res.status(404).json(new server_response(404, err, 'Looks like you do not have an account with us. Please go ahead and create one', 'Unsuccessful'))
@@ -43,4 +43,17 @@ const authenticate_user = async (req, res, next) => {
         })
 }
 
-export { create_account, authenticate_user }
+const profile_build = async (req, res, next) => {
+    cl(req.body)
+    await user_model.findOne({ username: req.body.username }).populate('profile')
+        .then(resp => {
+            res.status(200).json(new server_response(200, resp, 'Profile built successfully'))
+        })
+        .catch(err => {
+            cl(err.message)
+            res.status(400).json(new server_response(400, err, 'Looks like you do not have an account with us. Please go ahead and create one',
+                'Unsuccessful'))
+        })
+}
+
+export { create_account, authenticate_user, profile_build }

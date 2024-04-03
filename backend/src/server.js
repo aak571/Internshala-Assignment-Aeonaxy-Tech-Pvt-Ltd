@@ -21,3 +21,7 @@ const initiate_server = async () => {
 }
 
 initiate_server()
+
+// Capitalise the user details after logging in
+// Remove body parser
+// Be very granular in sending the responses from server
