@@ -16,8 +16,7 @@ const create_account = async (req, res, next) => {
                     res.status(200).json(new server_response(200, resp, 'Account created successfully !!!'))
                 })
                 .catch(err => {
-                    res.status(400).json(new server_response(400, err, "Couldn't create an account, please try again",
-                        'Unsuccessful'))
+                    res.status(400).json(new server_response(400, err, err.message, 'Unsuccessful'))
                 })
         })
         .catch(err => {
@@ -26,16 +25,22 @@ const create_account = async (req, res, next) => {
         })
 }
 
-const get_user = (req, res, next) => {
-
+const authenticate_user = async (req, res, next) => {
+    const { email } = req.params
+    await user_model.findOne({ $and: [{ email }] }).populate('profile')
+        .then(resp => {
+            cl(resp)
+            if (resp) {
+                res.status(200).json(new server_response(200, resp, 'You are logged in successsfully'))
+            }
+            else {
+                res.status(404).json(new server_response(404, err, 'Looks like you do not have an account with us. Please go ahead and create one', 'Unsuccessful'))
+            }
+        })
+        .catch(err => {
+            res.status(400).json(new server_response(400, err, 'Looks like you do not have an account with us. Please go ahead and create one',
+                'Unsuccessful'))
+        })
 }
 
-const edit_user = (req, res, next) => {
-
-}
-
-const delete_user = (req, res, next) => {
-
-}
-
-export { create_account, get_user, edit_user, delete_user }
+export { create_account, authenticate_user }
