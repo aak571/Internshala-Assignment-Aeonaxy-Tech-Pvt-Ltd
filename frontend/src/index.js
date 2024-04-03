@@ -1,9 +1,10 @@
 import react_dom from 'react-dom/client'
+import App from './app.js'
 
 const MainComponent = () => {
     return (
         <div>
-            Aakash
+            <App />
         </div>
     )
 }

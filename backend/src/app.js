@@ -7,7 +7,7 @@ const serve = express()
 
 serve.use(bodyParser.json())
 serve.use(cors({
-    origin: process.env.ORIGIN,
+    origin: ' http://localhost:3000',
     credentials: true
 }))
 serve.use(express.json({ limit: '16kb' }))
