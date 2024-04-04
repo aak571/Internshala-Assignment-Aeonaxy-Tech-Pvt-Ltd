@@ -28,7 +28,7 @@ const create_account = async (req, res, next) => {
 
 const authenticate_user = async (req, res, next) => {
     // cl(req.params)
-    await user_model.findOne({ username: req.params.username }).populate('profile').select('-_id -password -name -email -profile._id')
+    await user_model.findOne({ username: req.params.username }).populate('profile').select('-_id -password -name -email')
         .then(resp => {
             if (resp) {
                 // res.cookie('Warm Greetings', `${resp.name}`)
@@ -42,6 +42,10 @@ const authenticate_user = async (req, res, next) => {
             res.status(400).json(new server_response(400, err, 'Looks like you do not have an account with us. Please go ahead and create one',
                 'Unsuccessful'))
         })
+}
+
+const edit_account = async (req, res, next) => {
+
 }
 
 const profile_build = async (req, res, next) => {
