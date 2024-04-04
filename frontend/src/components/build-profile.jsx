@@ -30,9 +30,9 @@ const BuildProfile = () => {
                 await axios.put(res.data.body.s3_presigned_url, profile_image.image, { headers: { "Content-Type": "multipart/form-data" } })
                     .then(async res => {
                         // *******please give name_old and profile_photo_name some value******
-                        await axios.put('http://localhost:5000/api/v1/user/edit_profile', { profile_id, name_old: '', location, what_brought_you_here, profile_photo_name })
+                        await axios.put('http://localhost:5000/api/v1/user/edit_profile', { profile_id, name_old: 'aaku kavi-wt.jpeg', location, what_brought_you_here, profile_photo_name })
                             .then(res => {
-                                cl('Profile updated')
+                                cl(res.data.message)
                             })
                             .catch(err => {
                                 cl('Profile not updated due to some issue')

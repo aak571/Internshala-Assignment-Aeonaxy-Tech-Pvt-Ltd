@@ -11,6 +11,7 @@ const s3_delete_image = async (key) => {
     })
     await s3_client.send(delete_object_command)
         .then(() => {
+            cl('OBJECT DELETED')
             return true
         })
         .catch(() => {

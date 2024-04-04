@@ -29,18 +29,27 @@ const create_account = async (req, res, next) => {
 }
 
 const authenticate_user = async (req, res, next) => {
-    await user_model.findOne({ username: req.params.username }).populate('profile').select('-_id -password -name -email')
-        .then(resp => {
+    await user_model.findOne({ username: req.params.username }).populate('profile').select('-_id -name -email')
+        .then(async resp => {
             if (resp) {
-                // res.cookie('Warm Greetings', `${resp.name}`)
-                res.status(200).json(new server_response(200, resp, 'You are logged in successsfully, Welcome'))
+                const is_password_right = await resp.is_password_correct(req.body.password, resp.password)
+                if (is_password_right) {
+                    cl('1')
+                    return res.status(200).json(new server_response(200, resp, 'You are logged in successsfully, Welcome'))
+                }
+                else {
+                    cl('2')
+                    return res.status(200).json(new server_response(404, err, 'Incorrect Password', 'Unsuccessful'))
+                }
             }
             else {
-                res.status(404).json(new server_response(404, err, 'Looks like you do not have an account with us. Please go ahead and create one', 'Unsuccessful'))
+                cl('4')
+                return res.status(404).json(new server_response(404, err, 'Looks like you do not have an account with us. Please go ahead and create one', 'Unsuccessful'))
             }
         })
         .catch(err => {
-            res.status(400).json(new server_response(400, err, 'Looks like you do not have an account with us. Please go ahead and create one',
+            cl('3')
+            return res.status(400).json(new server_response(400, err, 'Looks like you do not have an account with us. Please go ahead and create one',
                 'Unsuccessful'))
         })
 }
@@ -142,7 +151,7 @@ const delete_account = async (req, res, next) => {
 // }
 
 const get_s3_presigned_url = async (req, res, next) => {
-    await user_model.findOne({ username: req.body.username }).populate('profile')
+    await user_model.findOne({ username: req.body.username }).populate('profile').select('-password -email -name -_id -__v')
         .then(async resp => {
             const profile_id = resp.profile._id
             req.body.name = resp.username + '-' + req.body.name
@@ -168,10 +177,11 @@ const edit_profile = async (req, res, next) => {
         const profile_photo_name = req.body.profile_photo_name
         await profile_model.findOneAndUpdate({ $or: [{ _id }, { profile_photo_name }] }, {
             profile_photo_name: req.body.profile_photo_name, location: req.body.location, what_brought_you_here: req.body.what_brought_you_here
-        })
+        }).select('-what_brought_you_here -profile_photo_name -location -_id -__v')
             .then(async resp => {
                 if (resp) {
                     //**Write the condition to skip this entire if-else when called without having to edit the profile image**
+                    // Check why this is moving to else part even it returns true
                     if (req.body.name_old && await s3_delete_image(req.body.name_old)) {
                         res.status(201).json(new server_response(201, resp, 'Updated profile'))
                     }
