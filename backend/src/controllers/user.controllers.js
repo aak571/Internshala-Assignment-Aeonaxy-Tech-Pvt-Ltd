@@ -27,7 +27,6 @@ const create_account = async (req, res, next) => {
 }
 
 const authenticate_user = async (req, res, next) => {
-    // cl(req.params)
     await user_model.findOne({ username: req.params.username }).populate('profile').select('-_id -password -name -email')
         .then(resp => {
             if (resp) {
@@ -44,8 +43,35 @@ const authenticate_user = async (req, res, next) => {
         })
 }
 
-const edit_account = async (req, res, next) => {
-
+const delete_account = async (req, res, next) => {
+    await user_model.findOneAndDelete({ username: req.params.username })
+        .then(async resp => {
+            if (resp) {
+                const profile_id = resp.profile
+                await profile_model.findOneAndDelete({ _id: profile_id })
+                    .then(resp => {
+                        if (resp) {
+                            res.status(200).json(new server_response(200, resp, 'Account deleted'))
+                        }
+                        else {
+                            res.status(400).json(new server_response(400, err, 'We could not delete your account due to some unexpected issue',
+                                'Unsuccessful'))
+                        }
+                    })
+                    .catch(err => {
+                        res.status(400).json(new server_response(400, err, 'We could not delete your account due to some unexpected issue',
+                            'Unsuccessful'))
+                    })
+            }
+            else {
+                res.status(400).json(new server_response(400, err, 'We could not delete your account due to some unexpected issue',
+                    'Unsuccessful'))
+            }
+        })
+        .catch(err => {
+            res.status(400).json(new server_response(400, err, 'We could not delete your account due to some unexpected issue',
+                'Unsuccessful'))
+        })
 }
 
 const profile_build = async (req, res, next) => {
@@ -55,7 +81,7 @@ const profile_build = async (req, res, next) => {
             const profile_id = resp.profile._id
             // cl(profile_id)
             // const user_name = resp.name
-            req.body.name = req.body.name + '-' + resp.username
+            req.body.name = resp.username + '-' + req.body.name
             let s3_presigned_url = '/'
 
             await get_s3_signed_url_for_image_upload(req.body.name, req.body.type)
@@ -96,6 +122,25 @@ const profile_build = async (req, res, next) => {
         })
 }
 
+const get_profile = async (req, res, next) => {
+    await user_model.findOne({ username: req.body.username }).select('-password -email -username -name -_id -__v')
+        .then(async resp => {
+            if (resp) {
+                // cl(resp)
+                await profile_model.findOne({ _id: resp.profile }).select('-_id')
+                    .then(resp => {
+                        cl(resp)
+                    })
+                    .catch(err => {
 
+                    })
+            }
+            else {
 
-export { create_account, authenticate_user, profile_build }
+            }
+        })
+        .catch()
+    res.status(200).send('This is ur profile')
+}
+
+export { create_account, authenticate_user, profile_build, delete_account, get_profile }

@@ -17,7 +17,7 @@ const BuildProfile = () => {
     const finish_onclick_handler = async () => {
         const { location, what_brought_you_here } = profile_details
         const { name, type } = profile_image.image
-        await axios.post('http://localhost:5000/api/v1/user/profile_build', { location, what_brought_you_here, username: 'aakukavi', name, type })
+        await axios.post('http://localhost:5000/api/v1/user/profile_build', { location, what_brought_you_here, username: 'aaku kavi', name, type })
             .then(async res => {
                 // cookies can be sent from the server as well. But in this case I chose to set it from here.
                 document.cookie = `${res.data.body.cookie_key}=${res.data.body.cookie_value}`
