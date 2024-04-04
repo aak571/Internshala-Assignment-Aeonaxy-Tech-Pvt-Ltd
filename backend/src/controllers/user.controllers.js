@@ -2,6 +2,7 @@ import { user_model } from "../models/users.model.js"
 import { profile_model } from "../models/profile.model.js"
 import { server_response } from "../utils/server_response.js"
 import { get_s3_signed_url_for_image_upload } from "../utils/s3/get_pre-signed_url_for_images.js"
+import { get_s3_signed_url } from "../utils/s3/get_signed_url.js"
 import { cl } from "../utils/console.log.js"
 
 const create_account = async (req, res, next) => {
@@ -79,8 +80,6 @@ const profile_build = async (req, res, next) => {
         .then(async resp => {
             let image_name
             const profile_id = resp.profile._id
-            // cl(profile_id)
-            // const user_name = resp.name
             req.body.name = resp.username + '-' + req.body.name
             let s3_presigned_url = '/'
 
@@ -128,19 +127,40 @@ const get_profile = async (req, res, next) => {
             if (resp) {
                 // cl(resp)
                 await profile_model.findOne({ _id: resp.profile }).select('-_id')
-                    .then(resp => {
-                        cl(resp)
+                    .then(async resp => {
+                        // cl(resp)
+                        const location = resp.location
+                        const what_brought_you_here = resp.what_brought_you_here
+                        if (resp) {
+                            await get_s3_signed_url(resp.profile_photo_name)
+                                .then(resp => {
+                                    cl(resp)
+                                    res.status(200).json(new server_response(200, { location: location, what_brought_you_here: what_brought_you_here, profile_photo_url: resp }, 'Signed url of ur profile photo'))
+                                })
+                                .catch(err => {
+                                    res.status(400).json(new server_response(400, err, 'Error occured while retrieving profile data, please try again later',
+                                        'Unsuccessful'))
+                                })
+                        }
+                        else {
+                            res.status(400).json(new server_response(400, err, 'Error occured while retrieving profile data, please try again later',
+                                'Unsuccessful'))
+                        }
                     })
                     .catch(err => {
-
+                        res.status(400).json(new server_response(400, err, 'Error occured while retrieving profile data, please try again later',
+                            'Unsuccessful'))
                     })
             }
             else {
-
+                res.status(400).json(new server_response(400, err, 'Error occured while retrieving profile data, please try again later',
+                    'Unsuccessful'))
             }
         })
-        .catch()
-    res.status(200).send('This is ur profile')
+        .catch(err => {
+            res.status(400).json(new server_response(400, err, 'Error occured while retrieving profile data, please try again later',
+                'Unsuccessful'))
+        })
 }
 
 export { create_account, authenticate_user, profile_build, delete_account, get_profile }

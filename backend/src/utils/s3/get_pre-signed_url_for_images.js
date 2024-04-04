@@ -15,6 +15,9 @@ const get_s3_signed_url_for_image_upload = async (key, content_type) => {
         .then(url => {
             URL = url
         })
+        .catch(() => {
+            URL = ''
+        })
     return URL
 }
 
