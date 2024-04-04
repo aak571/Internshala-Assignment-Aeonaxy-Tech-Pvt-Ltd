@@ -19,7 +19,10 @@ const BuildProfile = () => {
         const { name, type } = profile_image.image
         await axios.post('http://localhost:5000/api/v1/user/profile_build', { location, what_brought_you_here, username: 'aakukavi', name, type })
             .then(async res => {
-                await axios.put(res.data.body, profile_image.image, { headers: { "Content-Type": "multipart/form-data" } })
+                // cookies can be sent from the server as well. But in this case I chose to set it from here.
+                document.cookie = `${res.data.body.cookie_key}=${res.data.body.cookie_value}`
+
+                await axios.put(res.data.body.s3_presigned_url, profile_image.image, { headers: { "Content-Type": "multipart/form-data" } })
                     .then(res => {
                         cl(`Profile created: ${res}`)
                     })
@@ -43,3 +46,15 @@ const BuildProfile = () => {
 }
 
 export default BuildProfile
+
+
+
+// function setCookie(name, value, expires = 7, path = '/', domain = '') {
+//     const date = new Date();
+//     date.setTime(date.getTime() + (expires * 24 * 60 * 60 * 1000));
+//     const expiresString = `expires=${date.toUTCString()}`;
+//     const cookieString = `${name}=${encodeURIComponent(value)}; ${expiresString}; path=${path}; domain=${domain}`;
+//     document.cookie = cookieString;
+//   }
+
+//   setCookie('theme', 'dark', 30); // Set cookie for 30 days

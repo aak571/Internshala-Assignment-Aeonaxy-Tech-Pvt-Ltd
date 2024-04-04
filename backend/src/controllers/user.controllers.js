@@ -27,11 +27,11 @@ const create_account = async (req, res, next) => {
 }
 
 const authenticate_user = async (req, res, next) => {
-    await user_model.findOne({ email: req.params.username }).populate('profile')
+    // cl(req.params)
+    await user_model.findOne({ username: req.params.username }).populate('profile').select('-_id -password -name -email -profile._id')
         .then(resp => {
-            cl(resp)
             if (resp) {
-                res.cookie('Warm Greetings', `${resp.name}`)
+                // res.cookie('Warm Greetings', `${resp.name}`)
                 res.status(200).json(new server_response(200, resp, 'You are logged in successsfully, Welcome'))
             }
             else {
@@ -49,7 +49,7 @@ const profile_build = async (req, res, next) => {
         .then(async resp => {
             let image_name
             const profile_id = resp.profile._id
-            cl(profile_id)
+            // cl(profile_id)
             // const user_name = resp.name
             req.body.name = req.body.name + '-' + resp.username
             let s3_presigned_url = '/'
@@ -73,8 +73,8 @@ const profile_build = async (req, res, next) => {
             else {
                 await profile_model.findOneAndUpdate({ _id: profile_id }, { profile_photo_name: image_name, location: req.body.location, what_brought_you_here: req.body.what_brought_you_here })
                     .then(resp => {
-                        cl(resp)
-                        if (resp) res.status(201).json(new server_response(201, s3_presigned_url, 'Profile created'))
+                        // cl(resp)
+                        if (resp) res.status(201).json(new server_response(201, { s3_presigned_url, cookie_key: 'Warm Greetings', cookie_value: 'Hello dear' }, 'Profile created'))
                         else res.status(500).json(new server_response(500, err, 'Could not create profile, please try again',
                             'Unsuccessful'))
                     })
@@ -91,5 +91,7 @@ const profile_build = async (req, res, next) => {
                 'Unsuccessful'))
         })
 }
+
+
 
 export { create_account, authenticate_user, profile_build }
