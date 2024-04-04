@@ -29,29 +29,26 @@ const create_account = async (req, res, next) => {
 }
 
 const authenticate_user = async (req, res, next) => {
-    await user_model.findOne({ username: req.params.username }).populate('profile').select('-_id -name -email')
+    await user_model.findOne({ username: req.params.username }).select('-_id -name -email')
         .then(async resp => {
+            cl(resp)
             if (resp) {
                 const is_password_right = await resp.is_password_correct(req.body.password, resp.password)
                 if (is_password_right) {
-                    cl('1')
                     return res.status(200).json(new server_response(200, resp, 'You are logged in successsfully, Welcome'))
                 }
-                else {
-                    cl('2')
-                    return res.status(200).json(new server_response(404, err, 'Incorrect Password', 'Unsuccessful'))
+                else { // Please give a good body for the below response
+                    return res.status(404).json(new server_response(404, { message: 'Incorrect Password' }, 'Incorrect Password', 'Unsuccessful'))
                 }
             }
             else {
-                cl('4')
                 return res.status(404).json(new server_response(404, err, 'Looks like you do not have an account with us. Please go ahead and create one', 'Unsuccessful'))
             }
         })
-        .catch(err => {
-            cl('3')
-            return res.status(400).json(new server_response(400, err, 'Looks like you do not have an account with us. Please go ahead and create one',
-                'Unsuccessful'))
-        })
+    .catch(err => {
+        return res.status(400).json(new server_response(400, err, 'Looks like you do not have an account with us. Please go ahead and create one',
+            'Unsuccessful'))
+    })
 }
 
 const delete_account = async (req, res, next) => {
