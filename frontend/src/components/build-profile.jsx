@@ -14,6 +14,8 @@ const BuildProfile = () => {
         set_profile_image({ ...profile_image, image: e.target.files[0] })
     }
 
+    /****************Please use the two controllers according to whethwer profile photo changed or not******************/
+
     const finish_onclick_handler = async () => {
         const { location, what_brought_you_here } = profile_details
         const { name, type } = profile_image.image
@@ -42,8 +44,7 @@ const BuildProfile = () => {
             <input id="what_brought_you_here" onChange={profile_details_onchange_handler} placeholder="what brought you here ?" className="mt-5"></input>
             <button onClick={finish_onclick_handler} className="btn border mt-5">Finish</button>
 
-            {/* <img src="https://profile-images-internshala-assignment.s3.ap-south-1.amazonaws.com/aaku%20kavi-wt.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAUBKKK74PBXT3YQX2%2F20240404%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20240404T090930Z&X-Amz-Expires=100&X-Amz-Signature=e910a535a3d177200da1b2d6c93514faa64879dff37fbfea8b134e73780524eb&X-Amz-SignedHeaders=host&x-id=GetObject" alt="Image from Internshala Assignment Profile" /> */}
-
+            <img src="https://profile-images-internshala-assignment.s3.ap-south-1.amazonaws.com/aaku%20kavi-wt.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAUBKKK74PBXT3YQX2%2F20240404%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20240404T092450Z&X-Amz-Expires=900&X-Amz-Signature=4accc98e1663bd7426f174b5069e619b3c33cc8ebadf38dcc2f5efa5c9fbfa3a&X-Amz-SignedHeaders=host&x-id=GetObject" alt="Image from Internshala Assignment Profile" />
         </div>
     )
 }

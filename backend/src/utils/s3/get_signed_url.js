@@ -10,7 +10,7 @@ const get_s3_signed_url = async (key) => {
         Key: key
     })
     let URL = ''
-    await getSignedUrl(s3_client, get_object_command, { expiresIn: 200 })
+    await getSignedUrl(s3_client, get_object_command)
         .then(url => {
             URL = url
         })
