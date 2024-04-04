@@ -37,7 +37,7 @@ const authenticate_user = async (req, res, next) => {
                 if (is_password_right) {
                     return res.status(200).json(new server_response(200, resp, 'You are logged in successsfully, Welcome'))
                 }
-                else { // Please give a good body for the below response
+                else { // Please give a good body for the below response snd rectify this kind error in all other cases
                     return res.status(404).json(new server_response(404, { message: 'Incorrect Password' }, 'Incorrect Password', 'Unsuccessful'))
                 }
             }
