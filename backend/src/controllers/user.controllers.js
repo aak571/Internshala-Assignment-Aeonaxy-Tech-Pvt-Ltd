@@ -76,60 +76,135 @@ const delete_account = async (req, res, next) => {
         })
 }
 
-const profile_build = async (req, res, next) => { // since we r using this for editing profile as well, you need to verify whether the profile photo is changed or not by 'profile_photo_name_old' to optimize
+
+
+
+
+
+
+
+
+
+
+// const profile_build = async (req, res, next) => { // since we r using this for editing profile as well, you need to verify whether the profile photo is changed or not by 'profile_photo_name_old' to optimize
+//     await user_model.findOne({ username: req.body.username }).populate('profile')
+//         .then(async resp => {
+//             let image_name
+//             const profile_id = resp.profile._id
+//             req.body.name = resp.username + '-' + req.body.name
+//             let s3_presigned_url = '/'
+//             await get_s3_signed_url_for_image_upload(req.body.name, req.body.type)
+//                 .then(resp => {
+//                     if (resp === '') return res.status(500).json(new server_response(500, err, 'Could not create profile, please try again', 'Unsuccessful'))
+//                     else {
+//                         s3_presigned_url = resp
+//                         image_name = req.body.name
+//                     }
+//                 })
+//                 .catch(() => {
+//                     image_name = '/'
+//                 })
+
+//             if (image_name === '/') {
+//                 res.status(500).json(new server_response(500, err, 'Could not create profile, please try again',
+//                     'Unsuccessful'))
+//             }
+//             else {
+//                 await profile_model.findOneAndUpdate({ _id: profile_id }, {
+//                     profile_photo_name: image_name, location: req.body.location, what_brought_you_here: req.body.what_brought_you_here
+//                 })
+//                     .then(async resp => {
+//                         if (resp) {
+//                             if (await s3_delete_image(req.body.name_old)) {
+//                                 res.status(201).json(new server_response(201, { s3_presigned_url }, 'Updated profile'))
+//                             }
+//                             else {
+//                                 res.status(201).json(new server_response(201, {
+//                                     message: 'Something went wrong while retrieving your updated photo'
+//                                 }, "Updated successfully but unable to get your updated photo at the moment, please try updating it once again"))
+//                             }
+//                         }
+//                         else res.status(500).json(new server_response(500, err, 'Could not create profile, please try again',
+//                             'Unsuccessful'))
+//                     })
+//                     .catch(err => {
+//                         res.status(500).json(new server_response(500, err, 'Could not create profile, please try again',
+//                             'Unsuccessful'))
+//                     })
+//             }
+
+//         })
+//         .catch(err => {
+//             cl(err.message)
+//             res.status(400).json(new server_response(400, err, 'Could not create profile, please try again',
+//                 'Unsuccessful'))
+//         })
+// }
+
+const get_s3_presigned_url = async (req, res, next) => {
     await user_model.findOne({ username: req.body.username }).populate('profile')
         .then(async resp => {
-            let image_name
             const profile_id = resp.profile._id
             req.body.name = resp.username + '-' + req.body.name
-            let s3_presigned_url = '/'
             await get_s3_signed_url_for_image_upload(req.body.name, req.body.type)
                 .then(resp => {
-                    if (resp === '') return res.status(500).json(new server_response(500, err, 'Could not create profile, please try again', 'Unsuccessful'))
+                    if (resp === '') res.status(500).json(new server_response(500, err, 'Not in the position to update profile, please try again later while we fix the problem', 'Unsuccessful'))
                     else {
-                        s3_presigned_url = resp
-                        image_name = req.body.name
+                        res.status(201).json(new server_response(201, { s3_presigned_url: resp, profile_id, profile_photo_name: req.body.name }, 'Updated profile'))
                     }
                 })
-                .catch(() => {
-                    image_name = '/'
+                .catch(err => {
+                    res.status(500).json(new server_response(500, err, 'Not in the position to update profile, please try again later while we fix the problem', 'Unsuccessful'))
                 })
-
-            if (image_name === '/') {
-                res.status(500).json(new server_response(500, err, 'Could not create profile, please try again',
-                    'Unsuccessful'))
-            }
-            else {
-                await profile_model.findOneAndUpdate({ _id: profile_id }, {
-                    profile_photo_name: image_name, location: req.body.location, what_brought_you_here: req.body.what_brought_you_here
-                })
-                    .then(async resp => {
-                        if (resp) {
-                            if (await s3_delete_image(req.body.name_old)) {
-                                res.status(201).json(new server_response(201, { s3_presigned_url }, 'Updated profile'))
-                            }
-                            else {
-                                res.status(201).json(new server_response(201, {
-                                    message: 'Something went wrong while retrieving your updated photo'
-                                }, "Updated successfully but unable to get your updated photo at the moment, please try updating it once again"))
-                            }
-                        }
-                        else res.status(500).json(new server_response(500, err, 'Could not create profile, please try again',
-                            'Unsuccessful'))
-                    })
-                    .catch(err => {
-                        res.status(500).json(new server_response(500, err, 'Could not create profile, please try again',
-                            'Unsuccessful'))
-                    })
-            }
-
         })
         .catch(err => {
-            cl(err.message)
-            res.status(400).json(new server_response(400, err, 'Could not create profile, please try again',
-                'Unsuccessful'))
+            res.status(500).json(new server_response(500, err, 'Not in the position to update profile, please try again later while we fix the problem', 'Unsuccessful'))
         })
 }
+
+const edit_profile = async (req, res, next) => {
+    try {
+        const _id = req.body.profile_id
+        const profile_photo_name = req.body.profile_photo_name
+        await profile_model.findOneAndUpdate({ $or: [{ _id }, { profile_photo_name }] }, {
+            profile_photo_name: req.body.profile_photo_name, location: req.body.location, what_brought_you_here: req.body.what_brought_you_here
+        })
+            .then(async resp => {
+                if (resp) {
+                    //**Write the condition to skip this entire if-else when called without having to edit the profile image**
+                    if (req.body.name_old && await s3_delete_image(req.body.name_old)) {
+                        res.status(201).json(new server_response(201, resp, 'Updated profile'))
+                    }
+                    else {
+                        res.status(201).json(new server_response(201, {
+                            message: 'Something went wrong while retrieving your updated photo'
+                        }, "Updated successfully but unable to get your updated photo at the moment, please try updating it once again"))
+                    }
+                }
+                else {
+                    res.status(400).json(new server_response(400, err, 'Error occured while updating your profile, please try again later',
+                        'Unsuccessful'))
+                }
+            })
+            .catch(err => {
+                res.status(400).json(new server_response(400, err, 'Error occured while updating your profile, please try again later',
+                    'Unsuccessful'))
+            })
+    }
+    catch (err) {
+        res.status(400).json(new server_response(400, err, 'Error occured while updating your profile, please try again later',
+            'Unsuccessful'))
+    }
+}
+
+
+
+
+
+
+
+
+
 
 const get_profile = async (req, res, next) => {
     await user_model.findOne({ username: req.body.username }).select('-password -email -username -name -_id -__v')
@@ -172,29 +247,7 @@ const get_profile = async (req, res, next) => {
                 'Unsuccessful'))
         })
 }
-// await profile_model.findOneAndUpdate({ _id: profile_id }, { profile_photo_name: image_name, location: req.body.location, what_brought_you_here: req.body.what_brought_you_here })
 
-const edit_profile_when_profile_photo_did_not_change = async (req, res, next) => {  // name of the profile photo as an input to this controller
-    try {
-        await profile_model.findOneAndUpdate({ profile_photo_name: req.body.profile_photo_name }, { location: req.body.location, what_brought_you_here: req.body.what_brought_you_here })
-            .then(resp => {
-                if (resp) {
-                    res.status(201).json(new server_response(201, resp, 'Updated profile'))
-                }
-                else {
-                    res.status(400).json(new server_response(400, err, 'Error occured while updating your profile, please try again later',
-                        'Unsuccessful'))
-                }
-            })
-            .catch(err => {
-                res.status(400).json(new server_response(400, err, 'Error occured while updating your profile, please try again later',
-                    'Unsuccessful'))
-            })
-    }
-    catch (err) {
-        res.status(400).json(new server_response(400, err, 'Error occured while updating your profile, please try again later',
-            'Unsuccessful'))
-    }
+export {
+    create_account, authenticate_user, delete_account, get_profile, edit_profile, get_s3_presigned_url
 }
-
-export { create_account, authenticate_user, profile_build, delete_account, get_profile, edit_profile_when_profile_photo_did_not_change }
