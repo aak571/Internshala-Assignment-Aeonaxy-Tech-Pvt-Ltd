@@ -1,9 +1,9 @@
-import BuildProfile from "./components/build-profile.jsx"
+import CreateAccount from "./components/pages/create-account.jsx"
 
 const App = () => {
     return (
         <div>
-            <BuildProfile />
+            <CreateAccount />
         </div>
     )
 }
