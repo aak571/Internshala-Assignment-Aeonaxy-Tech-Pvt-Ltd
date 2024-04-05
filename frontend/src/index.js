@@ -1,4 +1,5 @@
 import react_dom from 'react-dom/client'
+import './index.css'
 import App from './app.js'
 
 const MainComponent = () => {
