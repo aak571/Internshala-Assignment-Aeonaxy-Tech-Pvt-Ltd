@@ -13,5 +13,3 @@ user_routes.route('/get_s3_presigned_url').post(get_s3_presigned_url)
 user_routes.route('/edit_profile').put(edit_profile)
 
 export { user_routes }
-
-// user_routes.route('/profile_build').post(profile_build)

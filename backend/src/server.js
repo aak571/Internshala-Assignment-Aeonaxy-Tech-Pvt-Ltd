@@ -31,3 +31,5 @@ initiate_server()
 // please add try catch to each and every await statements through out the project (FE and BE) and copy paste whatever is there in .catch() to the cath{}
 // Put S3Client in a try catch block
 // Replace the err of all the necessary else part
+// Exclude fields that are not required in all the controllers
+// Remove the profile photo if there is a problem in updating the profile_photo_name property in the profile collection

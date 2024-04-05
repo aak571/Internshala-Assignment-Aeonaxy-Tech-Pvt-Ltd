@@ -28,7 +28,7 @@ const user_schema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'profile'
     }
-})
+}, { timestamps: true })
 
 user_schema.pre('save', async function (next) {
     if (!this.isModified('password')) return next()

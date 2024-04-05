@@ -17,7 +17,7 @@ const profile_schema = new mongoose.Schema({
         trim: true,
         default: ''
     }
-})
+}, { timestamps: true })
 
 const profile_model = mongoose.model('profile', profile_schema)
 
