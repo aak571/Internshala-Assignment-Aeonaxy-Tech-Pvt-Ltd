@@ -5,6 +5,7 @@ import {
 import { cl } from "../utils/console.log.js"
 
 const user_routes = Router()
+
 user_routes.route('/create_account').post(create_account)
 user_routes.route('/authenticate_user/:username').post(authenticate_user)
 user_routes.route('/delete_account/:username').delete(delete_account)
