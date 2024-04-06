@@ -1,9 +1,11 @@
 import CoverImageAndDescription from "../cover-image-and-description.jsx"
+import LoginOption from "../login-option.jsx"
 
 const CreateAccount = () => {
     return (
-        <div>
+        <div className="md:flex">
             <CoverImageAndDescription />
+            <LoginOption />
         </div>
     )
 }
