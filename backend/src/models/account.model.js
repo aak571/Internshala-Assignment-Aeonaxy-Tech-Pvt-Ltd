@@ -4,13 +4,11 @@ import bcrypt from 'bcrypt'
 const account_schema = new mongoose.Schema({
     name: {
         type: String,
-        lowercase: true,
         trim: true
     },
     username: {
         type: String,
         unique: true,
-        lowercase: true,
         trim: true
     },
     email: {
@@ -40,6 +38,6 @@ account_schema.methods.is_password_correct = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
 
-const account_model = mongoose.model('user', user_schema)
+const account_model = mongoose.model('user', account_schema)
 
 export { account_model }

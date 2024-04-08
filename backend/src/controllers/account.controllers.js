@@ -5,6 +5,7 @@ import { cl } from "../utils/console.log.js"
 
 const create_account = async (req, res, next) => {
     try {
+        /***********Creating the 'Profile' document first************/
         await profile_model.create({})
             .then(async resp => {
                 const profile_id = resp._id
@@ -12,11 +13,14 @@ const create_account = async (req, res, next) => {
                     name: req.body.name, username: req.body.username, email: req.body.email, password: req.body.password,
                     profile: profile_id
                 })
-                    .then(resp => {
-                        res.status(200).json(new server_response(200, resp, "That's awesome your Account created successfully !!!"))
+                    .then(() => {
+                        res.status(200).json(new server_response(200, {}, "That's awesome your Account is created successfully !!!"))
                     })
-                    .catch(err => {
-                        res.status(400).json(new server_response(400, err, err.message, 'Unsuccessful'))
+                    .catch(async err => {
+                        /***Deleting the Profile document that was created earlier as the account creation isn't successful***/
+                        await profile_model.findByIdAndDelete(profile_id)
+
+                        res.status(400).json(new server_response(400, err, "Couldn't create the account due to some unexpected issue", 'Unsuccessful'))
                     })
             })
             .catch(err => {
@@ -33,7 +37,6 @@ const create_account = async (req, res, next) => {
 const authenticate_user = async (req, res, next) => {
     await account_model.findOne({ username: req.params.username }).select('-_id -name -email')
         .then(async resp => {
-            cl(resp)
             if (resp) {
                 const is_password_right = await resp.is_password_correct(req.body.password, resp.password)
                 if (is_password_right) {

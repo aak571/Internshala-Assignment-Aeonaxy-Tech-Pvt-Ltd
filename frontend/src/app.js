@@ -11,9 +11,9 @@ const App = () => {
             <Routes>
                 <Route path='/'>
                     {/* <Route index element={<CreateAccount />} /> */}
-                    <Route path='/create-account' element={<CreateAccount />} />
-                    <Route path='/build-profile' element={<CreateProfile />} />
-                    <Route path='/verify-email' element={<EmailVerify />} />
+                    <Route path='create-account' element={<CreateAccount />} />
+                    <Route path='build-profile' element={<CreateProfile />} />
+                    <Route path='verify-email' element={<EmailVerify />} />
                 </Route>
             </Routes>
         </BrowserRouter>
