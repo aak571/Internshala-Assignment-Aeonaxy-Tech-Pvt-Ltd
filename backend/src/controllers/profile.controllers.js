@@ -1,4 +1,4 @@
-import { user_model } from "../models/account.model.js"
+import { account_model } from "../models/account.model.js"
 import { profile_model } from "../models/profile.model.js"
 import { server_response } from "../utils/server_response.js"
 import { get_s3_signed_url_for_image_upload } from "../utils/s3/get_pre-signed_url_for_images.js"
@@ -7,7 +7,7 @@ import { s3_delete_image } from "../utils/s3/delete-object.js"
 import { cl } from "../utils/console.log.js"
 
 const get_s3_presigned_url = async (req, res, next) => {
-    await user_model.findOne({ username: req.body.username }).populate('profile').select('-password -email -name -_id -__v')
+    await account_model.findOne({ username: req.body.username }).populate('profile').select('-password -email -name -_id -__v')
         .then(async resp => {
             const profile_id = resp.profile._id
             req.body.name = resp.username + '-' + req.body.name
@@ -64,7 +64,7 @@ const edit_profile = async (req, res, next) => {
 }
 
 const get_profile = async (req, res, next) => {
-    await user_model.findOne({ username: req.body.username }).select('-password -email -username -name -_id -__v')
+    await account_model.findOne({ username: req.body.username }).select('-password -email -username -name -_id -__v')
         .then(async resp => {
             if (resp) {
                 // cl(resp)

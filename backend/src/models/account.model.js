@@ -40,6 +40,6 @@ account_schema.methods.is_password_correct = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
 
-const account_schema = mongoose.model('user', user_schema)
+const account_model = mongoose.model('user', user_schema)
 
-export { account_schema }
+export { account_model }

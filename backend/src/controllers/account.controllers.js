@@ -1,4 +1,4 @@
-import { user_model } from "../models/account.model.js"
+import { account_model } from "../models/account.model.js"
 import { profile_model } from "../models/profile.model.js"
 import { server_response } from "../utils/server_response.js"
 import { cl } from "../utils/console.log.js"
@@ -8,7 +8,7 @@ const create_account = async (req, res, next) => {
         await profile_model.create({})
             .then(async resp => {
                 const profile_id = resp._id
-                await user_model.create({
+                await account_model.create({
                     name: req.body.name, username: req.body.username, email: req.body.email, password: req.body.password,
                     profile: profile_id
                 })
@@ -31,7 +31,7 @@ const create_account = async (req, res, next) => {
 }
 
 const authenticate_user = async (req, res, next) => {
-    await user_model.findOne({ username: req.params.username }).select('-_id -name -email')
+    await account_model.findOne({ username: req.params.username }).select('-_id -name -email')
         .then(async resp => {
             cl(resp)
             if (resp) {
@@ -54,7 +54,7 @@ const authenticate_user = async (req, res, next) => {
 }
 
 const delete_account = async (req, res, next) => {
-    await user_model.findOneAndDelete({ username: req.params.username })
+    await account_model.findOneAndDelete({ username: req.params.username })
         .then(async resp => {
             if (resp) {
                 const profile_id = resp.profile
