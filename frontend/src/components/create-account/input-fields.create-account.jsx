@@ -3,6 +3,7 @@ import { create_account_terms_agreement_context } from '../../react-contexts/con
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { RingLoader } from 'react-spinners'
+import Cookies from 'js-cookie'
 import GoogleTermsAndConditions from "./google-terms-and-conditions.create-accout.jsx"
 import TermsOfService from "./terms-of-service.create-account.jsx"
 import axios from 'axios'
@@ -39,13 +40,13 @@ const InputFields = () => {
                         /**This will navigate the user to 'Profile Creation Page' after successfully creating an account**/
                         navigate('/build-profile')
 
+                        /*Setting a cookie containing 'username' to have a persistence storage to enhance the future user experience*/
+                        Cookies.set('username', account_details.username, { expires: 1 })
+
                         /*************Reseting the states (Just as good programming practice)**********/
                         set_response_messages({ ...response_messages, loader: false })
                         set_account_details({ ...account_details, name: '', username: '', email: '', password: '' })
                         set_are_terms_agreed({ ...are_terms_agreed, agreed: false })
-
-                        // set_response_messages({ ...response_messages, success: true, success_message: res.data.message })
-                        // console.log(res.data)
                     }
                     else {
                         /***********Reseting the states (Just as good programming practice)***********/
@@ -87,10 +88,10 @@ const InputFields = () => {
         }
     }
 
-    console.log(account_details, are_terms_agreed.agreed)
+    // console.log(account_details, are_terms_agreed.agreed)
 
     return (
-        <div className="ml-1 mr-1 bg-red-100 md:ml-60 md:mr-60 lg:ml-80 lg:mr-80">
+        <div className="ml-3 mr-3 md:ml-60 md:mr-60 lg:ml-80 lg:mr-80">
 
             <RingLoader className='mt-20 mx-auto' loading={response_messages.loader} color="#36d7b7" size={300} speedMultiplier={2} />
 
@@ -98,31 +99,31 @@ const InputFields = () => {
 
                 {response_messages.failure && <motion.p animate={{ x: [-30, 0, -30, 0, -30, 0, -30, 0], transition: { duration: 0.5 } }} className="text-sm mt-5 text-red-500">{response_messages.failure_message}</motion.p>}
 
-                <div className="lg:flex justify-between mt-5">
-                    <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 0.3 } }} className="flex flex-col bg-yellow-200 w-64 mt-7">
-                        <label className="font-bold bg-blue-200 text-start">Name</label>
+                <div className="lg:flex mt-5">
+                    <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 0.3 } }} className="flex flex-col w-64 mt-7">
+                        <label className="font-bold text-start">Name</label>
                         <input id='name' onChange={account_details_onchange_handler} className="bg-slate-100 rounded-lg h-11 text-center mt-2 border-1  hover:bg-slate-200 focus:outline-none focus:right-0 focus:border focus:border-blue-500" placeholder="............."></input>
                     </motion.div>
 
-                    <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 0.6 } }} className="flex flex-col bg-yellow-200 w-64 mt-7 ">
-                        <label className="font-bold bg-blue-200 text-start">Username</label>
+                    <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 0.6 } }} className="flex flex-col w-64 mt-7 lg:ml-3">
+                        <label className="font-bold text-start">Username</label>
                         <input id='username' onChange={account_details_onchange_handler} className="bg-slate-100 rounded-lg h-11 text-center mt-2 border-1  hover:bg-slate-200 focus:outline-none focus:right-0 focus:border focus:border-blue-500" placeholder="............."></input>
                     </motion.div>
                 </div>
 
-                <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 0.9 } }} className="flex flex-col mt-7 bg-yellow-200">
-                    <label className="font-bold bg-blue-200 text-start">Email</label>
+                <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 0.9 } }} className="flex flex-col mt-7">
+                    <label className="font-bold text-start">Email</label>
                     <input id='email' onChange={account_details_onchange_handler} className="bg-slate-100 rounded-lg h-11 text-center mt-2 border-1  hover:bg-slate-200 focus:outline-none focus:right-0 focus:border focus:border-blue-500" placeholder="............."></input>
                 </motion.div>
 
-                <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 1.2 } }} className="flex flex-col mt-7 bg-yellow-200">
-                    <label className="font-bold bg-blue-200 text-start">Password</label>
+                <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 1.2 } }} className="flex flex-col mt-7 ">
+                    <label className="font-bold text-start">Password</label>
                     <input id='password' onChange={account_details_onchange_handler} type="password" className="bg-slate-100 rounded-lg h-11 text-center mt-2 border-1  hover:bg-slate-200 focus:outline-none focus:right-0 focus:border focus:border-blue-500" placeholder="............."></input>
                 </motion.div>
 
                 <TermsOfService />
 
-                <div animate={{ y: [-20, 0], transition: { duration: 0.5, delay: 3 } }} className="mt-7 ml-3">
+                <div animate={{ y: [-20, 0], transition: { duration: 0.5, delay: 3 } }} className="mt-7">
                     <button onClick={create_account_onclick_handler}
                         /**The below line is to enable the 'Create Account' button only after the user fills all the fields**/
                         disabled={!(account_details.name && account_details.username && account_details.email && account_details.password && are_terms_agreed.agreed)}
