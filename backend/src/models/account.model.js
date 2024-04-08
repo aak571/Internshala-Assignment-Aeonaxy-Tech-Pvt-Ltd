@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose"
 import bcrypt from 'bcrypt'
 
-const user_schema = new mongoose.Schema({
+const account_schema = new mongoose.Schema({
     name: {
         type: String,
         lowercase: true,
@@ -30,16 +30,16 @@ const user_schema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
-user_schema.pre('save', async function (next) {
+account_schema.pre('save', async function (next) {
     if (!this.isModified('password')) return next()
     this.password = await bcrypt.hash(this.password, 15)
     next()
 })
 
-user_schema.methods.is_password_correct = async function (password) {
+account_schema.methods.is_password_correct = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
 
-const user_model = mongoose.model('user', user_schema)
+const account_schema = mongoose.model('user', user_schema)
 
-export { user_model, user_schema }
+export { account_schema }
