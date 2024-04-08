@@ -2,19 +2,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCamera, faRightLong } from '@fortawesome/free-solid-svg-icons'
 
 const InputFields = () => {
+
+    const profile_pic_onchange_handler = e => {
+        console.log(URL.createObjectURL(e.target.files[0]))
+        document.getElementById('profile-img').src = URL.createObjectURL(e.target.files[0])
+    }
     return (
         <div>
-            {false && <div className="mt-14 ml-96 mr-96">
+            <div className="mt-14 ml-96 mr-96">
                 <div>
                     <label className='font-bold text-lg'>Add a Profile Pic</label>
+                    {/* This is a Font-Awesome-icon */}
+                    <FontAwesomeIcon className=" ml-3 text-2xl text-blue-500" icon={faCamera} />
 
                     <div className='flex'>
-                        <div className="mt-4 w-28 h-28 border-2 border-blue-500 border-dashed rounded-full ">
-                            {/* This is a Font-Awesome-icon */}
-                            <FontAwesomeIcon className="mt-10 ml-11 text-2xl text-blue-500" icon={faCamera} />
-                        </div>
+                        <img id='profile-img' className="mt-4 w-28 h-28 border-2 border-blue-500 border-dashed rounded-full " />
                         <div className='mt-8 ml-10 flex flex-col'>
-                            <input type='file' accept='image/*' className='text-white italic text-sm rounded-lg border-blue-500 border-2 cursor-pointer w-48 bg-green-400' ></input>
+                            <input type='file' onChange={profile_pic_onchange_handler} accept='image/*' className='text-white italic text-sm rounded-lg border-blue-500 border-2 cursor-pointer w-48 bg-green-400' ></input>
                             <div className='flex'>
                                 <FontAwesomeIcon className='text-blue-500 mt-3' icon={faRightLong} />
                                 <p className='mt-2 ml-2 hover:text-green-500 cursor-pointer'>Or you can choose our defualt avatar</p>
@@ -31,9 +35,9 @@ const InputFields = () => {
                         <button className='bg-green-300 text-black w-40 rounded-lg h-10 hover:bg-green-400 hover:text-white'>Next</button>
                     </div>
                 </div>
-            </div>}
+            </div>
 
-            <div className='mt-4'>
+            {false && <div className='mt-4'>
                 <h1 className='text-3xl text-center bg-rose-200 font-semibold p-1'>What brings you here ?</h1>
                 <p className='text-green-600 text-center'>Please tell what your exactly looking for, so that we can personalise our offerings that best aligns with your needs. You can change the preferences later as well</p>
 
@@ -70,7 +74,7 @@ const InputFields = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>}
 
             <div className='text-center mt-4'>
                 <button className='bg-slate-300 w-20 rounded-lg h-10 hover:bg-slate-400 hover:text-white'>Back</button>
@@ -93,4 +97,4 @@ export default InputFields
 
 
 
-{/*  */ }
+
