@@ -1,15 +1,12 @@
-import { useContext } from 'react'
 import { create_account_terms_agreement_context } from '../../react-contexts/contexts/create-account-terms-agreement.context.js'
+import { useContext } from 'react'
 
 const TermsOfService = () => {
-    // const terms_agreement_consumer = useContext(create_account_terms_agreement_context)
     const { are_terms_agreed, set_are_terms_agreed } = useContext(create_account_terms_agreement_context)
 
     const terms_agreement_onchange_handler = () => {
         set_are_terms_agreed({ ...are_terms_agreed, agreed: !are_terms_agreed.agreed })
     }
-
-    // console.log(are_terms_agreed)
 
     return (
         <div className="flex mt-3">

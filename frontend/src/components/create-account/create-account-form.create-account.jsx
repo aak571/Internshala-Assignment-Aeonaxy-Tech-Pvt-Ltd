@@ -6,7 +6,6 @@ const CreateAccountForm = () => {
     return (
         <div>
             <motion.h1 animate={{ y: [-50, 0], transition: { duration: 1 } }} className="font-extrabold text-3xl mt-5 ml-60 mr-60">Sign up to <span className="italic underline decoration-wavy">Unsplash</span></motion.h1>
-            <p className="text-sm mt-5 ml-60 mr-60">* All the alerts goes here !!!</p>
             <CreateAccountTermsAgreementContextProvider>
                 <InputFields />
             </CreateAccountTermsAgreementContextProvider>

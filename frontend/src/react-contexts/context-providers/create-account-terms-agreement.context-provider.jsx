@@ -1,7 +1,5 @@
-import { useState, createContext } from "react"
 import { create_account_terms_agreement_context } from "../contexts/create-account-terms-agreement.context.js"
-
-// const create_account_terms_agreement_context = createContext(null)
+import { useState } from "react"
 
 const CreateAccountTermsAgreementContextProvider = props => {
     const [are_terms_agreed, set_are_terms_agreed] = useState({ agreed: false })
