@@ -26,7 +26,7 @@ initiate_server()
 // Remove body parser
 // Be very granular in sending the responses from server
 // Optimise the code lines if you want
-// Make two files in the Controllers
+// Make two files in the Controllers, Routes
 // dont allow spaces in username
 // please add try catch to each and every await statements through out the project (FE and BE) and copy paste whatever is there in .catch() to the cath{}
 // Put S3Client in a try catch block

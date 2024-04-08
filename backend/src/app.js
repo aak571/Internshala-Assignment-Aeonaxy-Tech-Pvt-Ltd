@@ -1,7 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
-import { user_routes } from './routes/user.routes.js'
+import { account_routes } from './routes/account.routes.js'
+import { profile_routes } from './routes/profile.routes.js'
 
 const serve = express()
 
@@ -13,6 +14,7 @@ serve.use(cors({
 serve.use(express.json({ limit: '16kb' }))
 serve.use(express.urlencoded({ extended: true, limit: '16kb' }))
 
-serve.use('/api/v1/user', user_routes)
+serve.use('/api/v1/account', account_routes)
+serve.use('/api/v1/profile', profile_routes)
 
 export { serve }
