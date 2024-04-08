@@ -1,4 +1,4 @@
-import { user_model } from "../models/users.model.js"
+import { user_model } from "../models/account.model.js"
 import { profile_model } from "../models/profile.model.js"
 import { server_response } from "../utils/server_response.js"
 import { get_s3_signed_url_for_image_upload } from "../utils/s3/get_pre-signed_url_for_images.js"

@@ -10,8 +10,9 @@ const App = () => {
         <BrowserRouter>
             <Routes>
                 <Route path='/'>
-                    <Route index element={<CreateAccount />} />
-                    <Route path='/create-profile' element={<CreateProfile />} />
+                    {/* <Route index element={<CreateAccount />} /> */}
+                    <Route path='/create-account' element={<CreateAccount />} />
+                    <Route path='/build-profile' element={<CreateProfile />} />
                     <Route path='/verify-email' element={<EmailVerify />} />
                 </Route>
             </Routes>

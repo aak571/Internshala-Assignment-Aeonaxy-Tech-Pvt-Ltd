@@ -1,4 +1,4 @@
-import { user_model } from "../models/users.model.js"
+import { user_model } from "../models/account.model.js"
 import { profile_model } from "../models/profile.model.js"
 import { server_response } from "../utils/server_response.js"
 import { cl } from "../utils/console.log.js"
