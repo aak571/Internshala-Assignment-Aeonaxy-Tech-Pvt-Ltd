@@ -5,8 +5,8 @@ import { motion } from 'framer-motion'
 
 const CreateAccount = () => {
     return (
-        <div className="md:flex">
-            <motion.div animate={{ x: [-100, 0], transition: { duration: 1 } }} className="w-3/6">
+        <div className="lg:flex">
+            <motion.div animate={{ x: [-100, 0], transition: { duration: 1 } }} className="lg:w-screen">
                 <CoverImage />
             </motion.div>
             <div className="w-screen h-screen">

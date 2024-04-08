@@ -84,14 +84,13 @@ const InputFields = () => {
             })
             set_account_details({ ...account_details, name: '', username: '', email: '', password: '' })
             set_are_terms_agreed({ ...are_terms_agreed, agreed: false })
-            // failure message
         }
     }
 
     console.log(account_details, are_terms_agreed.agreed)
 
     return (
-        <div className="ml-60 mr-60">
+        <div className="ml-1 mr-1 bg-red-100 md:ml-60 md:mr-60 lg:ml-80 lg:mr-80">
 
             <RingLoader className='mt-20 mx-auto' loading={response_messages.loader} color="#36d7b7" size={300} speedMultiplier={2} />
 
@@ -99,13 +98,13 @@ const InputFields = () => {
 
                 {response_messages.failure && <motion.p animate={{ x: [-30, 0, -30, 0, -30, 0, -30, 0], transition: { duration: 0.5 } }} className="text-sm mt-5 text-red-500">{response_messages.failure_message}</motion.p>}
 
-                <div className="md:flex md:justify-between mt-10">
-                    <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 0.3 } }} className="flex flex-col bg-yellow-200 w-64">
+                <div className="lg:flex justify-between mt-5">
+                    <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 0.3 } }} className="flex flex-col bg-yellow-200 w-64 mt-7">
                         <label className="font-bold bg-blue-200 text-start">Name</label>
                         <input id='name' onChange={account_details_onchange_handler} className="bg-slate-100 rounded-lg h-11 text-center mt-2 border-1  hover:bg-slate-200 focus:outline-none focus:right-0 focus:border focus:border-blue-500" placeholder="............."></input>
                     </motion.div>
 
-                    <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 0.6 } }} className="flex flex-col bg-yellow-200 w-64">
+                    <motion.div animate={{ y: [-20, 0], transition: { duration: 0.3, delay: 0.6 } }} className="flex flex-col bg-yellow-200 w-64 mt-7 ">
                         <label className="font-bold bg-blue-200 text-start">Username</label>
                         <input id='username' onChange={account_details_onchange_handler} className="bg-slate-100 rounded-lg h-11 text-center mt-2 border-1  hover:bg-slate-200 focus:outline-none focus:right-0 focus:border focus:border-blue-500" placeholder="............."></input>
                     </motion.div>
@@ -123,7 +122,7 @@ const InputFields = () => {
 
                 <TermsOfService />
 
-                <div animate={{ y: [-20, 0], transition: { duration: 0.5, delay: 3 } }} className="mt-7">
+                <div animate={{ y: [-20, 0], transition: { duration: 0.5, delay: 3 } }} className="mt-7 ml-3">
                     <button onClick={create_account_onclick_handler}
                         /**The below line is to enable the 'Create Account' button only after the user fills all the fields**/
                         disabled={!(account_details.name && account_details.username && account_details.email && account_details.password && are_terms_agreed.agreed)}
