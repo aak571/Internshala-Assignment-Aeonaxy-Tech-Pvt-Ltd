@@ -46,7 +46,6 @@ const get_s3_signed_urls_for_default_avatars = async () => {
                     })
                 return URL
             }))
-        cl(default_avatars_urls)
         return default_avatars_urls
     }
     catch {

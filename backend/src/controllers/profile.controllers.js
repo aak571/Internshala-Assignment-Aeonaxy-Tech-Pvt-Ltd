@@ -4,6 +4,7 @@ import { server_response } from "../utils/server_response.js"
 import { get_s3_signed_url_for_image_upload } from "../utils/s3/get_pre-signed_url_for_images.js"
 import { get_s3_signed_url, get_s3_signed_urls_for_default_avatars } from "../utils/s3/get_signed_url.js"
 import { s3_delete_image } from "../utils/s3/delete-object.js"
+import { send_avatar } from "../utils/s3/copy-avatar-to-project-bucket.js"
 import { cl } from "../utils/console.log.js"
 
 const get_s3_presigned_url = async (req, res, next) => {
@@ -144,4 +145,25 @@ const get_signed_urls_for_default_avatars = async (req, res, next) => {
     }
 }
 
-export { get_profile, edit_profile, get_s3_presigned_url, get_signed_urls_for_default_avatars }
+const send_avatar_to_s3 = async (req, res, next) => {
+    try {
+        await send_avatar(req.body.get_object_signed_url, req.body.put_object_signed_url)
+            .then(resp => {
+                if (resp) {
+                    res.status(200).json(new server_response(200, resp, 'Avatar saved'))
+                }
+                else {
+                    res.status(400).json(new server_response(400, {}, "Couldn' save Avatar due to some issue",
+                        'Unsuccessful'))
+                }
+            })
+            .catch(err => {
+                res.status(400).json(new server_response(400, err, "Couldn' save Avatar due to some issue", 'Unsuccessful'))
+            })
+    }
+    catch {
+        res.status(400).json(new server_response(400, {}, "Couldn' save Avatar due to some issue", 'Unsuccessful'))
+    }
+}
+
+export { get_profile, edit_profile, get_s3_presigned_url, get_signed_urls_for_default_avatars, send_avatar_to_s3 }
