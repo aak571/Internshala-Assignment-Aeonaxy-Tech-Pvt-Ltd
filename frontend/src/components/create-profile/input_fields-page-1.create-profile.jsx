@@ -12,11 +12,9 @@ import { create_profile_context } from '../../react-contexts/contexts/create-pro
 const InputFieldsPage1 = () => {
     const [default_avatar, set_default_avatar] = useState({
         visibility: false, signed_url_1: '', signed_url_2: '', signed_url_3: '', signed_url_4: '',
-        selected_avatar_name: '', selected_avatar_get_obj_signed_url: ''
+        avatar_name_1: '', avatar_name_2: '', avatar_name_3: '', avatar_name_4: ''
     })
-    const did_default_avatar_upload = true
     const { profile_details, set_profile_details } = useContext(create_profile_context)
-    console.log('THIS IS', profile_details)
 
     useEffect(() => {
         const get_default_avatars = async () => {
@@ -24,8 +22,10 @@ const InputFieldsPage1 = () => {
                 await axios.get('http://localhost:5000/api/v1/profile/get_signed_urls_for_default_avatars')
                     .then(res => {
                         set_default_avatar({
-                            ...default_avatar, signed_url_1: res.data.body[0], signed_url_2: res.data.body[1],
-                            signed_url_3: res.data.body[2], signed_url_4: res.data.body[3]
+                            ...default_avatar, signed_url_1: res.data.body[0].url, signed_url_2: res.data.body[1].url,
+                            signed_url_3: res.data.body[2].url, signed_url_4: res.data.body[3].url,
+                            avatar_name_1: res.data.body[0].avatar_name, avatar_name_2: res.data.body[1].avatar_name,
+                            avatar_name_3: res.data.body[2].avatar_name, avatar_name_4: res.data.body[3].avatar_name
                         })
                     })
                     .catch(err => {
@@ -40,12 +40,9 @@ const InputFieldsPage1 = () => {
     }, [])
 
     const profile_pic_onchange_handler = e => {
-        // console.log(URL.createObjectURL(e.target.files[0]))
-        // document.getElementById('profile-img').src = URL.createObjectURL(e.target.files[0])
-
         set_profile_details({
             ...profile_details, profile_img: e.target.files[0],
-            profile_img_preview: URL.createObjectURL(e.target.files[0])
+            profile_img_preview: URL.createObjectURL(e.target.files[0]), avatar_signed_url: '', avatar_name: ''
         })
     }
 
@@ -54,7 +51,6 @@ const InputFieldsPage1 = () => {
     }
 
     const close_default_avatars_onclick_handler = () => {
-        console.log('YESSS')
         set_default_avatar({ ...default_avatar, visibility: false })
     }
 
@@ -88,17 +84,32 @@ const InputFieldsPage1 = () => {
 
             //     })
             document.getElementById('profile-img').src = default_avatar.signed_url_1
+            set_profile_details({
+                ...profile_details, avatar_signed_url: default_avatar.signed_url_1, profile_img: null,
+                avatar_name: default_avatar.avatar_name_1, avatar_name_source: ''
+            })
         }
         else if (e.target.id === 'avatar-2') {
             document.getElementById('profile-img').src = default_avatar.signed_url_2
+            set_profile_details({
+                ...profile_details, avatar_signed_url: default_avatar.signed_url_2, profile_img: null,
+                avatar_name: default_avatar.avatar_name_2
+            })
         }
         else if (e.target.id === 'avatar-3') {
             document.getElementById('profile-img').src = default_avatar.signed_url_3
+            set_profile_details({
+                ...profile_details, avatar_signed_url: default_avatar.signed_url_3, profile_img: null,
+                avatar_name: default_avatar.avatar_name_3
+            })
         }
         else if (e.target.id === 'avatar-4') {
             document.getElementById('profile-img').src = default_avatar.signed_url_4
+            set_profile_details({
+                ...profile_details, avatar_signed_url: default_avatar.signed_url_4, profile_img: null,
+                avatar_name: default_avatar.avatar_name_4
+            })
         }
-        set_default_avatar({ ...default_avatar, is_default_avatar_chosen: true })
     }
 
     const enter_location_onchange_handler = e => {
@@ -111,7 +122,7 @@ const InputFieldsPage1 = () => {
         })
     }
 
-    // console.log('Page 1')
+    // console.log(profile_details.profile_img)
 
     return (
         <div>
@@ -126,8 +137,8 @@ const InputFieldsPage1 = () => {
                         <div className='mt-8 ml-10 flex flex-col'>
                             <input type='file' onChange={profile_pic_onchange_handler} accept='image/*' className='text-white italic text-sm rounded-lg border-blue-500 border-2 cursor-pointer w-48 bg-green-400' ></input>
                             <div className='flex'>
-                                <FontAwesomeIcon className='text-blue-500 mt-3' icon={faRightLong} />
-                                <p onClick={show_default_avatars_onclick_handler} className='mt-2 ml-2 hover:text-green-500 cursor-pointer'>Or you can choose our defualt avatar</p>
+                                <FontAwesomeIcon className='text-blue-500 mt-3 text-sm' icon={faRightLong} />
+                                <p onClick={show_default_avatars_onclick_handler} className='mt-1 ml-2 hover:text-green-500 cursor-pointer'>Or you can choose our defualt avatar</p>
                             </div>
                         </div>
                     </div>
@@ -148,13 +159,12 @@ const InputFieldsPage1 = () => {
                 </div>
 
                 <div className='mt-14 bg-red-500 mb-2'>
-                    <button onClick={next_onclick_handler} disabled={!(profile_details.profile_img && profile_details.location)}
+                    <button onClick={next_onclick_handler} disabled={!((profile_details.profile_img || profile_details.avatar_name) && profile_details.location)}
                         className={` w-40 rounded-lg h-10
-                        ${(profile_details.profile_img && profile_details.location) ? 'bg-green-400 text-black' : 'bg-green-200 text-slate-400'}
-                        hover:${!(profile_details.profile_img && profile_details.location) && 'cursor-not-allowed'}
-                        hover:${(profile_details.profile_img && profile_details.location) && 'bg-green-500'}
-                        hover:${(profile_details.profile_img && profile_details.location) && 'text-white'}
-                        `}>Next</button>
+                        ${((profile_details.profile_img || profile_details.avatar_name) && profile_details.location) ? 'bg-green-400 text-black' : 'bg-green-200 text-slate-400'}
+                        hover:${!((profile_details.profile_img || profile_details.avatar_name) && profile_details.location) && 'cursor-not-allowed'}
+                        hover:${((profile_details.profile_img || profile_details.avatar_name) && profile_details.location) && 'bg-green-500'}
+                        hover:${((profile_details.profile_img || profile_details.avatar_name) && profile_details.location) && 'text-white'}`}>Next</button>
                 </div>
             </div>}
         </div>

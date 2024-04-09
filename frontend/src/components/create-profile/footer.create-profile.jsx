@@ -1,4 +1,6 @@
 import { useContext } from 'react'
+import axios from 'axios'
+import Cookies from 'js-cookie'
 import { create_profile_context } from '../../react-contexts/contexts/create-profile.context.js'
 
 const FooterOfCreateProfile = () => {
@@ -10,8 +12,59 @@ const FooterOfCreateProfile = () => {
         })
     }
 
-    const finish_onclick_handler = () => {
-        console.log('FINISH')
+    const finish_onclick_handler = async () => {
+        try {
+            if (profile_details.profile_img) {
+                const username = Cookies.get('username')
+                const { name, type } = profile_details.profile_img
+                await axios.post('http://localhost:5000/api/v1/profile/get_s3_presigned_url', { username, name, type })
+                    .then(async res => {
+                        const profile_id = res.data.body.profile_id
+                        const profile_photo_name = res.data.body.profile_photo_name
+                        // console.log(profile_id, profile_photo_name)
+                        await axios.put(res.data.body.s3_presigned_url, profile_details.profile_img)
+                            .then(async res => { ////Profile photo name has to be stored in react state/////
+                                // console.log('Profile photo uploaded', res)
+                                await axios.put('http://localhost:5000/api/v1/profile/edit_profile', {
+                                    profile_id, profile_photo_name, location: profile_details.location,
+                                    what_brought_you_here: profile_details.what_brings_you_here
+                                })
+                                    .then(res => {
+                                        // console.log('Profile created', res)
+
+                                    })
+                                    .catch(err => {
+                                        //////Alert///////
+                                        console.log('Could not create profile', err)
+                                    })
+                            })
+                            .catch(err => {
+                                //////Alert///////
+                                console.log('Could not upload Profile photo', err)
+                            })
+                    })
+                    .catch(err => {
+                        //////Alert///////
+                        console.log('ERROR while creating signed url', err)
+                    })
+            }
+            else {
+                const username = Cookies.get('username')
+                await axios.post('http://localhost:5000/api/v1/profile/upload_avatar_to_s3', {
+                    username, name: profile_details.avatar_name
+                })
+                    .then(res => {
+                        console.log('Avatar uploaded', res)
+                    })
+                    .catch(err => {
+                        //////Alert///////
+                        console.log('Avatar not uploaded', err)
+                    })
+            }
+        }
+        catch {
+            //////Alert///////
+        }
     }
 
     return (
