@@ -8,6 +8,7 @@ import { send_avatar } from "../utils/s3/copy-avatar-to-project-bucket.js"
 import { cl } from "../utils/console.log.js"
 
 const get_s3_presigned_url = async (req, res, next) => {
+    console.log(req.body.username)
     try {
         await account_model.findOne({ username: req.body.username }).populate('profile').select('-password -email -name -_id -__v')
             .then(async resp => {
@@ -15,8 +16,8 @@ const get_s3_presigned_url = async (req, res, next) => {
                 req.body.name = resp.username + '-' + req.body.name
                 await get_s3_signed_url_for_image_upload(req.body.name, req.body.type)
                     .then(resp => {
-                        if (resp === '') res.status(500).json(new server_response(500, err, 'Not in the position to update profile, please try again later while we fix the problem', 'Unsuccessful'))
-                        else {
+                        if (resp === '') return res.status(500).json(new server_response(500, {}, 'Not in the position to update profile, please try again later while we fix the problem', 'Unsuccessful'))
+                        else { ///////////// Is sending the profile photo name really needed ???? ////////////////
                             res.status(201).json(new server_response(201, { s3_presigned_url: resp, profile_id, profile_photo_name: req.body.name }, 'Updated profile'))
                         }
                     })
@@ -43,14 +44,11 @@ const edit_profile = async (req, res, next) => {
             .then(async resp => {
                 if (resp) {
                     //**Write the condition to skip this entire if-else when called without having to edit the profile image**
-                    // Check why this is moving to else part even it returns true
                     if (req.body.name_old && await s3_delete_image(req.body.name_old)) {
                         res.status(201).json(new server_response(201, resp, 'Updated profile'))
                     }
                     else {
-                        res.status(201).json(new server_response(201, {
-                            message: 'Something went wrong while retrieving your updated photo'
-                        }, "Updated successfully but unable to get your updated photo at the moment, please try updating it once again"))
+                        res.status(201).json(new server_response(201, {}, "Profile photo updated but will not get ready to be retrieved as we have something to check upon"))
                     }
                 }
                 else {
@@ -145,25 +143,42 @@ const get_signed_urls_for_default_avatars = async (req, res, next) => {
     }
 }
 
-const send_avatar_to_s3 = async (req, res, next) => {
+const upload_avatar_to_s3 = async (req, res, next) => {
     try {
-        await send_avatar(req.body.get_object_signed_url, req.body.put_object_signed_url)
+        const source_key = req.body.name
+        req.body.name = req.body.username + '-' + req.body.name
+        // let put_object_signed_url = ''
+        // await get_s3_signed_url_for_image_upload(req.body.name, 'image/jpg')
+        //     .then(resp => {
+        //         if (resp === '') return res.status(500).json(new server_response(500, {}, 'Not in the position to update profile, please try again later while we fix the problem', 'Unsuccessful'))
+        //         else {
+        //             put_object_signed_url = resp
+        //         }
+        //     })
+        //     .catch(err => {
+        //         res.status(500).json(new server_response(500, err, 'Not in the position to update profile, please try again later while we fix the problem', 'Unsuccessful'))
+        //     })
+        // console.log(req.body.get_object_signed_url)
+        await send_avatar(source_key, req.body.name)
             .then(resp => {
                 if (resp) {
                     res.status(200).json(new server_response(200, resp, 'Avatar saved'))
                 }
                 else {
-                    res.status(400).json(new server_response(400, {}, "Couldn' save Avatar due to some issue",
+                    cl(1)
+                    res.status(400).json(new server_response(400, {}, "Couldn't save Avatar due to some issue",
                         'Unsuccessful'))
                 }
             })
             .catch(err => {
+                cl(1)
                 res.status(400).json(new server_response(400, err, "Couldn' save Avatar due to some issue", 'Unsuccessful'))
             })
     }
     catch {
-        res.status(400).json(new server_response(400, {}, "Couldn' save Avatar due to some issue", 'Unsuccessful'))
+        cl(1)
+        res.status(400).json(new server_response(400, {}, "Couldn't save your Avatar due to some issue", 'Unsuccessful'))
     }
 }
 
-export { get_profile, edit_profile, get_s3_presigned_url, get_signed_urls_for_default_avatars, send_avatar_to_s3 }
+export { get_profile, edit_profile, get_s3_presigned_url, get_signed_urls_for_default_avatars, upload_avatar_to_s3 }

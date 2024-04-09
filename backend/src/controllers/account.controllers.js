@@ -35,56 +35,68 @@ const create_account = async (req, res, next) => {
 }
 
 const authenticate_user = async (req, res, next) => {
-    await account_model.findOne({ username: req.params.username }).select('-_id -name -email')
-        .then(async resp => {
-            if (resp) {
-                const is_password_right = await resp.is_password_correct(req.body.password, resp.password)
-                if (is_password_right) {
-                    return res.status(200).json(new server_response(200, resp, 'You are logged in successsfully, Welcome'))
+    try {
+        await account_model.findOne({ username: req.params.username }).select('-_id -name -email')
+            .then(async resp => {
+                if (resp) {
+                    const is_password_right = await resp.is_password_correct(req.body.password, resp.password)
+                    if (is_password_right) {
+                        return res.status(200).json(new server_response(200, resp, 'You are logged in successsfully, Welcome'))
+                    }
+                    else { // Please give a good body for the below response snd rectify this kind error in all other cases
+                        return res.status(404).json(new server_response(404, { message: 'Incorrect Password' }, 'Incorrect Password', 'Unsuccessful'))
+                    }
                 }
-                else { // Please give a good body for the below response snd rectify this kind error in all other cases
-                    return res.status(404).json(new server_response(404, { message: 'Incorrect Password' }, 'Incorrect Password', 'Unsuccessful'))
+                else {
+                    return res.status(404).json(new server_response(404, {}, 'Looks like you do not have an account with us. Please go ahead and create one', 'Unsuccessful'))
                 }
-            }
-            else {
-                return res.status(404).json(new server_response(404, {}, 'Looks like you do not have an account with us. Please go ahead and create one', 'Unsuccessful'))
-            }
-        })
-        .catch(err => {
-            return res.status(400).json(new server_response(400, err, 'Looks like you do not have an account with us. Please go ahead and create one',
-                'Unsuccessful'))
-        })
+            })
+            .catch(err => {
+                return res.status(400).json(new server_response(400, err, 'Looks like you do not have an account with us. Please go ahead and create one',
+                    'Unsuccessful'))
+            })
+    }
+    catch {
+        return res.status(400).json(new server_response(400, {}, 'Unable to log you in at the moment. Please try later',
+            'Unsuccessful'))
+    }
 }
 
 const delete_account = async (req, res, next) => {
-    await account_model.findOneAndDelete({ username: req.params.username })
-        .then(async resp => {
-            if (resp) {
-                const profile_id = resp.profile
-                await profile_model.findOneAndDelete({ _id: profile_id })
-                    .then(resp => {
-                        if (resp) {
-                            res.status(200).json(new server_response(200, resp, 'Account deleted'))
-                        }
-                        else {
+    try {
+        await account_model.findOneAndDelete({ username: req.params.username })
+            .then(async resp => {
+                if (resp) {
+                    const profile_id = resp.profile
+                    await profile_model.findOneAndDelete({ _id: profile_id })
+                        .then(resp => {
+                            if (resp) {
+                                res.status(200).json(new server_response(200, resp, 'Account deleted'))
+                            }
+                            else {
+                                res.status(400).json(new server_response(400, err, 'We could not delete your account due to some unexpected issue',
+                                    'Unsuccessful'))
+                            }
+                        })
+                        .catch(err => {
                             res.status(400).json(new server_response(400, err, 'We could not delete your account due to some unexpected issue',
                                 'Unsuccessful'))
-                        }
-                    })
-                    .catch(err => {
-                        res.status(400).json(new server_response(400, err, 'We could not delete your account due to some unexpected issue',
-                            'Unsuccessful'))
-                    })
-            }
-            else {
-                res.status(400).json(new server_response(400, {}, 'We could not delete your account due to some unexpected issue',
+                        })
+                }
+                else {
+                    res.status(400).json(new server_response(400, {}, 'We could not delete your account due to some unexpected issue',
+                        'Unsuccessful'))
+                }
+            })
+            .catch(err => {
+                res.status(400).json(new server_response(400, err, 'We could not delete your account due to some unexpected issue',
                     'Unsuccessful'))
-            }
-        })
-        .catch(err => {
-            res.status(400).json(new server_response(400, err, 'We could not delete your account due to some unexpected issue',
-                'Unsuccessful'))
-        })
+            })
+    }
+    catch {
+        res.status(400).json(new server_response(400, {}, 'We could not delete your account due to some unexpected issue',
+            'Unsuccessful'))
+    }
 }
 
 export { create_account, authenticate_user, delete_account }

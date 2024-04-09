@@ -1,0 +1,3 @@
+const str = 'https://internshala-assignment-default-avatars.s3.ap-south-1.amazonaws.com/default-avatar-woman-2.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAUBKKK74PBXT3YQX2%2F20240409%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20240409T133124Z&X-Amz-Expires=3600&X-Amz-Signature=d75ed3abc337675d46be30bc218e5affc9190e18cfd6f205c9a0648602f25bab&X-Amz-SignedHeaders=host&x-id=GetObject'
+
+console.log(str.match(/(?:\/\/[^/]+\/)(.+)/g))

@@ -36,13 +36,17 @@ const get_s3_signed_urls_for_default_avatars = async () => {
                     Bucket: process.env.BUCKET_NAME_OF_DEFAULT_AVATARS,
                     Key: key
                 })
-                let URL = ''
+                let URL = {}
                 await getSignedUrl(s3_client, get_object_command, { expiresIn: 3600 })
                     .then(url => {
-                        URL = url
+                        // URL = url
+                        URL = {
+                            avatar_name: key,
+                            url: url
+                        }
                     })
                     .catch(() => {
-                        URL = ''
+                        URL = {}
                     })
                 return URL
             }))
