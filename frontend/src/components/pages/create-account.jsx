@@ -13,6 +13,7 @@ const CreateAccount = () => {
                 <LoginOption />
                 <CreateAccountForm />
             </div>
+            Woah, this is truely crazy
         </div>
     )
 }
