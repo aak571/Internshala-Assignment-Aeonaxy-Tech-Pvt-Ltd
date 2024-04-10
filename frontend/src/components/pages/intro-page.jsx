@@ -16,6 +16,14 @@ const Intro = () => {
                 <button onClick={create_account_onclick_handler} className="bg-purple-400 rounded-3xl p-5 hover:w-52 hover:bg-orange-500 hover:text-white">Create Account</button>
                 <button onClick={create_account_onclick_handler} className="bg-purple-400 rounded-3xl p-5 hover:w-52 hover:bg-orange-500 hover:text-white">Create Account</button>
                 <button onClick={create_account_onclick_handler} className="bg-purple-400 rounded-3xl p-5 hover:w-52 hover:bg-orange-500 hover:text-white">Create Account</button>
+                <button onClick={create_account_onclick_handler} className="bg-purple-400 rounded-3xl p-5 hover:w-52 hover:bg-orange-500 hover:text-white">Create Account</button>
+                <button onClick={create_account_onclick_handler} className="bg-purple-400 rounded-3xl p-5 hover:w-52 hover:bg-orange-500 hover:text-white">Create Account</button>
+                <button onClick={create_account_onclick_handler} className="bg-purple-400 rounded-3xl p-5 hover:w-52 hover:bg-orange-500 hover:text-white">Create Account</button>
+                <button onClick={create_account_onclick_handler} className="bg-purple-400 rounded-3xl p-5 hover:w-52 hover:bg-orange-500 hover:text-white">Create Account</button>
+                <button onClick={create_account_onclick_handler} className="bg-purple-400 rounded-3xl p-5 hover:w-52 hover:bg-orange-500 hover:text-white">Create Account</button>
+                <button onClick={create_account_onclick_handler} className="bg-purple-400 rounded-3xl p-5 hover:w-52 hover:bg-orange-500 hover:text-white">Create Account</button>
+                <button onClick={create_account_onclick_handler} className="bg-purple-400 rounded-3xl p-5 hover:w-52 hover:bg-orange-500 hover:text-white">Create Account</button>
+                <button onClick={create_account_onclick_handler} className="bg-purple-400 rounded-3xl p-5 hover:w-52 hover:bg-orange-500 hover:text-white">Create Account</button>
             </div>
             Hey this is superb
         </div>
