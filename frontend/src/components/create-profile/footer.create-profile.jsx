@@ -20,13 +20,13 @@ const FooterOfCreateProfile = () => {
                 set_profile_details({ ...profile_details, loader: false })
                 const username = Cookies.get('username')
                 const { name, type } = profile_details.profile_img
-                await axios.post('http://localhost:5000/api/v1/profile/get_s3_presigned_url', { username, name, type })
+                await axios.post('https://internshala-assignment-aeonaxy-tech-pvt-55ys.onrender.com/api/v1/account/create/api/v1/profile/get_s3_presigned_url', { username, name, type })
                     .then(async res => {
                         const profile_id = res.data.body.profile_id
                         const profile_photo_name = res.data.body.profile_photo_name
                         await axios.put(res.data.body.s3_presigned_url, profile_details.profile_img)
                             .then(async () => {
-                                await axios.put('http://localhost:5000/api/v1/profile/edit_profile', {
+                                await axios.put('https://internshala-assignment-aeonaxy-tech-pvt-55ys.onrender.com/api/v1/account/create/api/v1/profile/edit_profile', {
                                     profile_id, profile_photo_name, location: profile_details.location,
                                     what_brought_you_here: profile_details.what_brings_you_here
                                 })
@@ -58,7 +58,7 @@ const FooterOfCreateProfile = () => {
             else {
                 set_profile_details({ ...profile_details, loader: true })
                 const profile_id = Cookies.get('profile')
-                await axios.put('http://localhost:5000/api/v1/profile/edit_profile', {
+                await axios.put('https://internshala-assignment-aeonaxy-tech-pvt-55ys.onrender.com/api/v1/account/create/api/v1/profile/edit_profile', {
                     profile_id, profile_photo_name: profile_details.avatar_name,
                     location: profile_details.location, what_brought_you_here: profile_details.what_brings_you_here
                 })

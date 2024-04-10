@@ -18,7 +18,7 @@ const InputFieldsPage1 = () => {
     useEffect(() => {
         const get_default_avatars = async () => {
             try {
-                await axios.get('http://localhost:5000/api/v1/profile/get_signed_urls_for_default_avatars')
+                await axios.get('https://internshala-assignment-aeonaxy-tech-pvt-55ys.onrender.com/api/v1/profile/get_signed_urls_for_default_avatars')
                     .then(res => {
                         set_default_avatar({
                             ...default_avatar, signed_url_1: res.data.body[0], signed_url_2: res.data.body[1],

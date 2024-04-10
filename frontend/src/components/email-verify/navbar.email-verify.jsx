@@ -12,7 +12,7 @@ const NavBar = () => {
         const get_profile = async () => {
             try {
                 const username = Cookies.get('username')
-                await axios.get(`http://localhost:5000/api/v1/profile/get_profile/${username}`)
+                await axios.get(`https://internshala-assignment-aeonaxy-tech-pvt-55ys.onrender.com/api/v1/profile/get_profile/${username}`)
                     .then(res => {
                         set_profile({
                             ...profile, profile_photo: res.data.body.profile_photo_url,

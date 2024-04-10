@@ -5,7 +5,6 @@ const InputFieldsPage2 = () => {
     const { profile_details, set_profile_details } = useContext(create_profile_context)
 
     const what_brings_you_here_onchange_handler = e => {
-        console.log(e.target.id)
         set_profile_details({ ...profile_details, what_brings_you_here: e.target.id })
     }
 
