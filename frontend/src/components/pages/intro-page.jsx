@@ -1,4 +1,3 @@
-import LoginOption from "../create-account/login-option.create-account.jsx"
 import { useNavigate } from 'react-router-dom'
 
 const Intro = () => {
