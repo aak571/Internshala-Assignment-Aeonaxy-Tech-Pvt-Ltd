@@ -11,9 +11,3 @@ const MainComponent = () => {
 }
 
 react_dom.createRoot(document.getElementById('rootComponent')).render(<MainComponent />)
-
-// Remove Bootstrap CDN's
-// Unsplash has to be clickable to go to the intro page
-// Please make separate components for email-verify page
-// Password strength
-// Responsive

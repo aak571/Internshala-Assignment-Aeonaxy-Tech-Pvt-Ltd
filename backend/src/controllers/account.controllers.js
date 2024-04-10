@@ -1,7 +1,7 @@
 import { account_model } from "../models/account.model.js"
 import { profile_model } from "../models/profile.model.js"
 import { server_response } from "../utils/server_response.js"
-import { cl } from "../utils/console.log.js"
+import { sign_jwt } from "../utils/jwt-signing.js"
 
 const create_account = async (req, res, next) => {
     try {
@@ -14,7 +14,7 @@ const create_account = async (req, res, next) => {
                     profile: profile_id
                 })
                     .then(() => {
-                        res.status(200).json(new server_response(200, {}, "That's awesome your Account is created successfully !!!"))
+                        res.status(200).json(new server_response(200, { profile_id }, "That's awesome your Account is created successfully !!!"))
                     })
                     .catch(async err => {
                         /***Deleting the Profile document that was created earlier as the account creation isn't successful***/
@@ -34,6 +34,7 @@ const create_account = async (req, res, next) => {
     }
 }
 
+/*This controller could have been used by the frontend if had some more time*/
 const authenticate_user = async (req, res, next) => {
     try {
         await account_model.findOne({ username: req.params.username }).select('-_id -name -email')
@@ -41,10 +42,13 @@ const authenticate_user = async (req, res, next) => {
                 if (resp) {
                     const is_password_right = await resp.is_password_correct(req.body.password, resp.password)
                     if (is_password_right) {
-                        return res.status(200).json(new server_response(200, resp, 'You are logged in successsfully, Welcome'))
+                        /*********Preparing access tokens for the logged in user**************/
+                        const access_tokens = sign_jwt()
+
+                        return res.status(200).json(new server_response(200, access_tokens, 'You are logged in successsfully, Welcome'))
                     }
                     else { // Please give a good body for the below response snd rectify this kind error in all other cases
-                        return res.status(404).json(new server_response(404, { message: 'Incorrect Password' }, 'Incorrect Password', 'Unsuccessful'))
+                        return res.status(404).json(new server_response(403, {}, 'Incorrect Password', 'Unsuccessful'))
                     }
                 }
                 else {
@@ -62,6 +66,19 @@ const authenticate_user = async (req, res, next) => {
     }
 }
 
+/*This controller could have been used by the frontend if had some more time*/
+const go_to_dashboard = (req, res, next) => {
+    /*  req.verification comes from the middleware - 'verify_access_token'  */
+    if (req.verification) {
+        res.status(200).json(new server_response(200, {}, 'Yes, you are authorised to access dashboard'))
+    }
+    else {
+        /*In this case the user has to login again to get a new access token*/
+        res.status(200).json(new server_response(403, {}, "We would highly suggest you to login now as we care alot about your privacy and security. Thank you."))
+    }
+}
+
+/*This controller could have been used by the frontend if had some more time*/
 const delete_account = async (req, res, next) => {
     try {
         await account_model.findOneAndDelete({ username: req.params.username })
@@ -99,4 +116,6 @@ const delete_account = async (req, res, next) => {
     }
 }
 
-export { create_account, authenticate_user, delete_account }
+
+
+export { create_account, authenticate_user, go_to_dashboard, delete_account }

@@ -12,7 +12,6 @@ import { create_profile_context } from '../../react-contexts/contexts/create-pro
 const InputFieldsPage1 = () => {
     const [default_avatar, set_default_avatar] = useState({
         visibility: false, signed_url_1: '', signed_url_2: '', signed_url_3: '', signed_url_4: '',
-        avatar_name_1: '', avatar_name_2: '', avatar_name_3: '', avatar_name_4: ''
     })
     const { profile_details, set_profile_details } = useContext(create_profile_context)
 
@@ -22,18 +21,16 @@ const InputFieldsPage1 = () => {
                 await axios.get('http://localhost:5000/api/v1/profile/get_signed_urls_for_default_avatars')
                     .then(res => {
                         set_default_avatar({
-                            ...default_avatar, signed_url_1: res.data.body[0].url, signed_url_2: res.data.body[1].url,
-                            signed_url_3: res.data.body[2].url, signed_url_4: res.data.body[3].url,
-                            avatar_name_1: res.data.body[0].avatar_name, avatar_name_2: res.data.body[1].avatar_name,
-                            avatar_name_3: res.data.body[2].avatar_name, avatar_name_4: res.data.body[3].avatar_name
+                            ...default_avatar, signed_url_1: res.data.body[0], signed_url_2: res.data.body[1],
+                            signed_url_3: res.data.body[2], signed_url_4: res.data.body[3],
                         })
                     })
                     .catch(err => {
-                        //////Alert/////
+                        /****Handle with Alerts******/
                     })
             }
             catch {
-                //////Alert/////
+                /****Handle with Alerts******/
             }
         }
         get_default_avatars()
@@ -54,60 +51,33 @@ const InputFieldsPage1 = () => {
         set_default_avatar({ ...default_avatar, visibility: false })
     }
 
-    // async function extract_image_data_from_signed_url(signed_url) {
-    //     try {
-    //         await axios.get(signed_url, { responseType: 'blob' })
-    //             .then(res => {
-    //                 console.lo('SUCCESS', res)
-    //             })
-    //             .catch(err => {
-    //                 //////Alert/////
-    //                 did_default_avatar_upload = false
-    //                 console.log('could not extract image data from signed url', err)
-    //             })
-    //     }
-    //     catch {
-    //         //////Alert/////
-    //     }
-    // }
-
     const default_avatar_onclick_handler = async e => {
         if (e.target.id === 'avatar-1') {
-            // await extract_image_data_from_signed_url(default_avatar.signed_url_1)
-            //     .then(() => {
-            //         if (did_default_avatar_upload)
-            //             document.getElementById('profile-img').src = default_avatar.signed_url_1
-            //         else
-            //             document.getElementById('profile-img').src = ''
-            //     })
-            //     .catch(() => {
-
-            //     })
             document.getElementById('profile-img').src = default_avatar.signed_url_1
             set_profile_details({
                 ...profile_details, avatar_signed_url: default_avatar.signed_url_1, profile_img: null,
-                avatar_name: default_avatar.avatar_name_1, avatar_name_source: ''
+                profile_img_preview: '', avatar_name: 'default-avatar-woman-1.jpg'
             })
         }
         else if (e.target.id === 'avatar-2') {
             document.getElementById('profile-img').src = default_avatar.signed_url_2
             set_profile_details({
                 ...profile_details, avatar_signed_url: default_avatar.signed_url_2, profile_img: null,
-                avatar_name: default_avatar.avatar_name_2
+                profile_img_preview: '', avatar_name: 'default-avatar-woman-2.jpg'
             })
         }
         else if (e.target.id === 'avatar-3') {
             document.getElementById('profile-img').src = default_avatar.signed_url_3
             set_profile_details({
                 ...profile_details, avatar_signed_url: default_avatar.signed_url_3, profile_img: null,
-                avatar_name: default_avatar.avatar_name_3
+                profile_img_preview: '', avatar_name: 'default-avatar-man-1.jpg'
             })
         }
         else if (e.target.id === 'avatar-4') {
             document.getElementById('profile-img').src = default_avatar.signed_url_4
             set_profile_details({
                 ...profile_details, avatar_signed_url: default_avatar.signed_url_4, profile_img: null,
-                avatar_name: default_avatar.avatar_name_4
+                profile_img_preview: '', avatar_name: 'default-avatar-man-2.jpg'
             })
         }
     }
@@ -122,20 +92,18 @@ const InputFieldsPage1 = () => {
         })
     }
 
-    // console.log(profile_details.profile_img)
-
     return (
         <div>
-            {profile_details.page1_visibility && <div className="mt-14 ml-96 mr-96">
+            {profile_details.page1_visibility && <div className="mt-14 ml-2 mr-2 lg:ml-96 lg:mr-96 ">
                 <label className='font-bold text-lg'>Add a Profile Pic</label>
                 {/* This is a Font-Awesome-icon */}
                 <FontAwesomeIcon className=" ml-3 text-2xl text-blue-500" icon={faCamera} />
 
-                <div>
-                    <div className='flex'>
-                        <img id='profile-img' src={profile_details.profile_img_preview} className="mt-4 w-28 h-28 border-2 border-blue-500 border-dashed rounded-full " />
-                        <div className='mt-8 ml-10 flex flex-col'>
-                            <input type='file' onChange={profile_pic_onchange_handler} accept='image/*' className='text-white italic text-sm rounded-lg border-blue-500 border-2 cursor-pointer w-48 bg-green-400' ></input>
+                <div >
+                    <div className='lg:flex '>
+                        <img id='profile-img' src={(profile_details.profile_img_preview) ? profile_details.profile_img_preview : profile_details.avatar_signed_url} className="mt-4 w-28 h-28 border-2 border-blue-500 border-dashed rounded-full " />
+                        <div className='mt-8 ml-10 flex flex-col '>
+                            <input type='file' onChange={profile_pic_onchange_handler} accept='image/*' className='lg:ml-0 text-white italic text-sm rounded-lg border-blue-500 border-2 cursor-pointer w-48 bg-green-400' ></input>
                             <div className='flex'>
                                 <FontAwesomeIcon className='text-blue-500 mt-3 text-sm' icon={faRightLong} />
                                 <p onClick={show_default_avatars_onclick_handler} className='mt-1 ml-2 hover:text-green-500 cursor-pointer'>Or you can choose our defualt avatar</p>

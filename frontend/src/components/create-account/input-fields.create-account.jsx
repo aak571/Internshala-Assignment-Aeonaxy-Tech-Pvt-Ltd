@@ -5,18 +5,19 @@ import { motion } from 'framer-motion'
 import { RingLoader } from 'react-spinners'
 import Cookies from 'js-cookie'
 import GoogleTermsAndConditions from "./google-terms-and-conditions.create-accout.jsx"
+import { create_profile_context } from '../../react-contexts/contexts/create-profile.context.js'
 import TermsOfService from "./terms-of-service.create-account.jsx"
 import axios from 'axios'
 
 const InputFields = () => {
     const [account_details, set_account_details] = useState({ name: '', username: '', email: '', password: '' })
     const { are_terms_agreed, set_are_terms_agreed } = useContext(create_account_terms_agreement_context)
-    // const { response_messages, set_response_messages } = useContext(response_messages_context)
     const [response_messages, set_response_messages] = useState({
         success: false, success_message: '', failure: false, failure_message: '', notify: false, notification: '',
         loader: false
 
     })
+    const { profile_details, set_profile_details } = useContext(create_profile_context)
     const navigate = useNavigate()
 
     const account_details_onchange_handler = e => {
@@ -29,7 +30,6 @@ const InputFields = () => {
         set_account_details({ ...account_details, [e.target.id]: e.target.value })
     }
 
-    // console.log(response_messages)
 
     const create_account_onclick_handler = async () => {
         set_response_messages({ ...response_messages, success: false, success_message: '', failure: false, failure_message: '', notify: false, notification: '', loader: true })
@@ -40,8 +40,10 @@ const InputFields = () => {
                         /**This will navigate the user to 'Profile Creation Page' after successfully creating an account**/
                         navigate('/build-profile')
 
-                        /*Setting a cookie containing 'username' to have a persistence storage to enhance the future user experience*/
-                        Cookies.set('username', account_details.username, { expires: 1 })
+                        /*Setting a cookie containing 'username' and 'profile ID' to continue with the profile creation step.
+                        profile ID cookie will be immediately deleted after profile creation*/
+                        Cookies.set('username', account_details.username)
+                        Cookies.set('profile', res.data.body.profile_id)
 
                         /*************Reseting the states (Just as good programming practice)**********/
                         set_response_messages({ ...response_messages, loader: false })
@@ -77,7 +79,7 @@ const InputFields = () => {
                     }
                 })
         }
-        catch {
+        catch (err) {
             /***********Reseting the states (Just as good programming practice)***********/
             set_response_messages({
                 ...response_messages, failure: true,
@@ -87,8 +89,6 @@ const InputFields = () => {
             set_are_terms_agreed({ ...are_terms_agreed, agreed: false })
         }
     }
-
-    // console.log(account_details, are_terms_agreed.agreed)
 
     return (
         <div className="ml-3 mr-3 md:ml-60 md:mr-60 lg:ml-80 lg:mr-80">

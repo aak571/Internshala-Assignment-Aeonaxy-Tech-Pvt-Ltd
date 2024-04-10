@@ -1,7 +1,7 @@
 const Details = () => {
     return (
-        <div className='mt-52 ml-5 mr-5 flex text-sm space-x-20'>
-            <div className='w-72'>
+        <div className='mt-52 ml-5 mr-5 lg:flex text-sm space-x-20 text-center'>
+            <div className='w-72 mx-auto'>
                 <label className="italic font-bold cursor-pointer text-2xl underline decoration-wavy text-green-600">Unsplash</label>
                 <p className='mt-5'>Unsplash is world's best image platform where you can get high quality copyright-free images for absolutely free.</p>
                 <div className='flex space-x-1'>
@@ -13,7 +13,7 @@ const Details = () => {
                 </div>
             </div>
 
-            <div>
+            <div className="mt-4">
                 <label className="font-bold text-md">For Photographers</label>
                 <p className='mt-5 cursor-pointer hover:text-red-500'>Go Pro!</p>
                 <p className='mt-2 cursor-pointer hover:text-red-500'>Explore capturing images</p>
@@ -25,7 +25,7 @@ const Details = () => {
                 <p className='mt-2 cursor-pointer hover:text-red-500'>Code of conduct</p>
             </div>
 
-            <div>
+            <div className="mt-4">
                 <label className="font-bold text-md">Hire Photographers</label>
                 <p className='mt-5 cursor-pointer hover:text-purple-500'>Post a job opening</p>
                 <p className='mt-2 cursor-pointer hover:text-purple-500'>Post a freelance project</p>
@@ -35,7 +35,7 @@ const Details = () => {
                 <p className='mt-2 cursor-pointer hover:text-purple-500'>Advertise with us</p>
             </div>
 
-            <div>
+            <div className="mt-4">
                 <label className="font-bold text-md">Company</label>
                 <p className='mt-5 cursor-pointer hover:text-blue-500'>About</p>
                 <p className='mt-2 cursor-pointer hover:text-blue-500'>Careers</p>
@@ -48,7 +48,7 @@ const Details = () => {
                 <p className='mt-2 cursor-pointer hover:text-blue-500'>Cookie policy</p>
             </div>
 
-            <div>
+            <div className="mt-4">
                 <label className="font-bold text-md">Directories</label>
                 <p className='mt-5 cursor-pointer hover:text-yellow-500'>Photography job</p>
                 <p className='mt-2 cursor-pointer hover:text-yellow-500'>Photographers for hire</p>
@@ -61,7 +61,7 @@ const Details = () => {
                 <p className='mt-2 cursor-pointer hover:text-yellow-500'>Font Squirrel</p>
             </div>
 
-            <div>
+            <div className="mt-4">
                 <label className="font-bold text-md">Image Resources</label>
                 <p className='mt-5 cursor-pointer hover:text-green-500'>Freelancing</p>
                 <p className='mt-2 cursor-pointer hover:text-green-500'>Photo hiring</p>

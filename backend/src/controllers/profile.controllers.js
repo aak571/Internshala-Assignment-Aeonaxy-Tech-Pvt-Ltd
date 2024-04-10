@@ -4,8 +4,6 @@ import { server_response } from "../utils/server_response.js"
 import { get_s3_signed_url_for_image_upload } from "../utils/s3/get_pre-signed_url_for_images.js"
 import { get_s3_signed_url, get_s3_signed_urls_for_default_avatars } from "../utils/s3/get_signed_url.js"
 import { s3_delete_image } from "../utils/s3/delete-object.js"
-import { send_avatar } from "../utils/s3/copy-avatar-to-project-bucket.js"
-import { cl } from "../utils/console.log.js"
 
 const get_s3_presigned_url = async (req, res, next) => {
     console.log(req.body.username)
@@ -17,7 +15,7 @@ const get_s3_presigned_url = async (req, res, next) => {
                 await get_s3_signed_url_for_image_upload(req.body.name, req.body.type)
                     .then(resp => {
                         if (resp === '') return res.status(500).json(new server_response(500, {}, 'Not in the position to update profile, please try again later while we fix the problem', 'Unsuccessful'))
-                        else { ///////////// Is sending the profile photo name really needed ???? ////////////////
+                        else {
                             res.status(201).json(new server_response(201, { s3_presigned_url: resp, profile_id, profile_photo_name: req.body.name }, 'Updated profile'))
                         }
                     })
@@ -38,6 +36,7 @@ const edit_profile = async (req, res, next) => {
     try {
         const _id = req.body.profile_id
         const profile_photo_name = req.body.profile_photo_name
+        console.log(_id, profile_photo_name)
         await profile_model.findOneAndUpdate({ $or: [{ _id }, { profile_photo_name }] }, {
             profile_photo_name: req.body.profile_photo_name, location: req.body.location, what_brought_you_here: req.body.what_brought_you_here
         }).select('-what_brought_you_here -profile_photo_name -location -_id -__v')
@@ -48,7 +47,8 @@ const edit_profile = async (req, res, next) => {
                         res.status(201).json(new server_response(201, resp, 'Updated profile'))
                     }
                     else {
-                        res.status(201).json(new server_response(201, {}, "Profile photo updated but will not get ready to be retrieved as we have something to check upon"))
+                        /*This is when the profile gets created for the first time after account creation*/
+                        res.status(201).json(new server_response(201, {}, "You're profile created. Have a good time."))
                     }
                 }
                 else {
@@ -69,10 +69,9 @@ const edit_profile = async (req, res, next) => {
 
 const get_profile = async (req, res, next) => {
     try {
-        await account_model.findOne({ username: req.body.username }).select('-password -email -username -name -_id -__v')
+        await account_model.findOne({ username: req.params.username }).select('-password -email -username -name -_id -__v')
             .then(async resp => {
                 if (resp) {
-                    // cl(resp)
                     await profile_model.findOne({ _id: resp.profile }).select('-_id')
                         .then(async resp => {
                             const profile_photo_name = resp.profile_photo_name
@@ -82,7 +81,7 @@ const get_profile = async (req, res, next) => {
                                 await get_s3_signed_url(resp.profile_photo_name)
                                     .then(resp => {
                                         if (resp) {
-                                            res.status(200).json(new server_response(200, { profile_photo_name: profile_photo_name, location: location, what_brought_you_here: what_brought_you_here, profile_photo_url: resp }, 'Signed url of ur profile photo'))
+                                            res.status(200).json(new server_response(200, { location: location, what_brought_you_here: what_brought_you_here, profile_photo_url: resp }, 'Signed url of ur profile photo'))
                                         }
                                         else {
                                             res.status(400).json(new server_response(400, {}, 'Error occured while retrieving profile data, please try again later',
@@ -143,42 +142,5 @@ const get_signed_urls_for_default_avatars = async (req, res, next) => {
     }
 }
 
-const upload_avatar_to_s3 = async (req, res, next) => {
-    try {
-        const source_key = req.body.name
-        req.body.name = req.body.username + '-' + req.body.name
-        // let put_object_signed_url = ''
-        // await get_s3_signed_url_for_image_upload(req.body.name, 'image/jpg')
-        //     .then(resp => {
-        //         if (resp === '') return res.status(500).json(new server_response(500, {}, 'Not in the position to update profile, please try again later while we fix the problem', 'Unsuccessful'))
-        //         else {
-        //             put_object_signed_url = resp
-        //         }
-        //     })
-        //     .catch(err => {
-        //         res.status(500).json(new server_response(500, err, 'Not in the position to update profile, please try again later while we fix the problem', 'Unsuccessful'))
-        //     })
-        // console.log(req.body.get_object_signed_url)
-        await send_avatar(source_key, req.body.name)
-            .then(resp => {
-                if (resp) {
-                    res.status(200).json(new server_response(200, resp, 'Avatar saved'))
-                }
-                else {
-                    cl(1)
-                    res.status(400).json(new server_response(400, {}, "Couldn't save Avatar due to some issue",
-                        'Unsuccessful'))
-                }
-            })
-            .catch(err => {
-                cl(1)
-                res.status(400).json(new server_response(400, err, "Couldn' save Avatar due to some issue", 'Unsuccessful'))
-            })
-    }
-    catch {
-        cl(1)
-        res.status(400).json(new server_response(400, {}, "Couldn't save your Avatar due to some issue", 'Unsuccessful'))
-    }
-}
 
-export { get_profile, edit_profile, get_s3_presigned_url, get_signed_urls_for_default_avatars, upload_avatar_to_s3 }
+export { get_profile, edit_profile, get_s3_presigned_url, get_signed_urls_for_default_avatars }
