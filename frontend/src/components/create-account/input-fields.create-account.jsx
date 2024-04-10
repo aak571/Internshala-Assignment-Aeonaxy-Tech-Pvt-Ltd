@@ -34,7 +34,7 @@ const InputFields = () => {
     const create_account_onclick_handler = async () => {
         set_response_messages({ ...response_messages, success: false, success_message: '', failure: false, failure_message: '', notify: false, notification: '', loader: true })
         try {
-            await axios.post('https://internshala-assignment-aeonaxy-tech-pvt-55ys.onrender.com/api/v1/account/create', account_details)
+            await axios.post('http://localhost:5000/api/v1/account/create', account_details)
                 .then(res => {
                     if (res.data.status === 200) {
                         /**This will navigate the user to 'Profile Creation Page' after successfully creating an account**/
